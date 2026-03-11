@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
+import EntryStatusModal from './EntryStatusModal'; // Добавьте этот импорт
 
 function WeekView({ date }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -10,30 +11,32 @@ function WeekView({ date }) {
   const [selectedDuration, setSelectedDuration] = useState('30 мин');
   const [repeatInterval, setRepeatInterval] = useState('');
   const [weekData, setWeekData] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const categories = [
-    { name: 'Yoga', practices: ['Ядро', 'Стандарт 1', 'Стандарт 2', 'Стандарт 3'] },
-    { name: 'Boxing', practices: ['Ядро', 'Стандарт 1', 'Стандарт 2', 'Стандарт 3'] },
-    { name: 'SoftDev', practices: ['Ядро', 'Стандарт 1', 'Стандарт 2', 'Стандарт 3'] },
-    { name: 'MBA', practices: ['Ядро', 'Стандарт 1', 'Стандарт 2', 'Стандарт 3'] },
-    { name: 'English', practices: ['Ядро', 'Стандарт 1', 'Стандарт 2', 'Стандарт 3'] },
-    { name: 'Oratory', practices: ['Ядро', 'Стандарт 1', 'Стандарт 2', 'Стандарт 3'] },
-    { name: 'Math', practices: ['Ядро', 'Стандарт 1', 'Стандарт 2', 'Стандарт 3'] },
-    { name: 'Chinise', practices: ['Ядро', 'Стандарт 1', 'Стандарт 2', 'Стандарт 3'] },
-    { name: 'Finance', practices: ['Ядро', 'Стандарт 1', 'Стандарт 2', 'Стандарт 3'] },
-    { name: 'Chess', practices: ['Ядро', 'Стандарт 1', 'Стандарт 2', 'Стандарт 3'] },
-    { name: 'Business', practices: ['Ядро', 'Стандарт 1', 'Стандарт 2', 'Стандарт 3'] }
-  ];
+  const [selectedEntry, setSelectedEntry] = useState(null); // Для модального окна статуса
 
   const timeOptions = ['5 мин', '10 мин', '15 мин', '30 мин', '31 мин', '60 мин', '90 мин', '120 мин', '180 мин'];
   const repeatOptions = ['Не повторять', 'Каждый день', 'Каждую неделю', 'Каждый месяц', 'Каждый год'];
 
-  // Загрузка данных при изменении даты
+  // Загружаем категории при монтировании компонента
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  // Загружаем данные недели при изменении даты
   useEffect(() => {
     loadWeekData();
   }, [date]);
+
+  const loadCategories = async () => {
+    try {
+      const data = await api.getCategories();
+      setCategories(data);
+    } catch (err) {
+      console.error('Error loading categories:', err);
+    }
+  };
 
   const loadWeekData = async () => {
     setLoading(true);
@@ -50,21 +53,15 @@ function WeekView({ date }) {
     }
   };
 
-  const getCategoryColor = (category) => {
-    const colors = {
-      'Yoga': '#ff6b6b',
-      'Boxing': '#4ecdc4',
-      'SoftDev': '#45b7d1',
-      'MBA': '#96ceb4',
-      'English': '#ffeaa7',
-      'Oratory': '#ff9ff3',
-      'Math': '#feca57',
-      'Chinise': '#ffb8b8',
-      'Finance': '#c56cf0',
-      'Chess': '#ffcccc',
-      'Business': '#a8e6cf'
-    };
-    return colors[category] || '#ddd';
+  const getCategoryColor = (categoryName) => {
+    const category = categories.find(c => c.name === categoryName);
+    return category?.color || '#ddd';
+  };
+
+  const getCategoryPractices = (categoryName) => {
+    // Здесь нужно будет добавить практики для каждой категории
+    // Пока используем стандартные
+    return ['Ядро', 'Стандарт 1', 'Стандарт 2', 'Стандарт 3'];
   };
 
   const getCurrentCategory = () => {
@@ -91,11 +88,8 @@ function WeekView({ date }) {
       };
 
       await api.createEntry(newEntry);
-
-      // Перезагружаем данные
       await loadWeekData();
 
-      // Сброс формы
       setSelectedCategory('');
       setSelectedPractice('');
       setSelectedDuration('30 мин');
@@ -121,6 +115,10 @@ function WeekView({ date }) {
     }
   };
 
+  const handleEntryClick = (entry) => {
+    setSelectedEntry(entry);
+  };
+
   const formatDate = (dateStr) => {
     const d = new Date(dateStr);
     return `${d.getDate()} ${['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'][d.getMonth()]}`;
@@ -131,7 +129,7 @@ function WeekView({ date }) {
   const handlePrevWeek = () => {
     const newDate = new Date(date);
     newDate.setDate(date.getDate() - 7);
-    window.location.reload(); // Временно, потом нужно передавать через props
+    window.location.reload();
   };
 
   const handleNextWeek = () => {
@@ -184,14 +182,14 @@ function WeekView({ date }) {
                 className="week-period morning-period"
                 onClick={() => handleSlotClick(new Date(day.date), 'morning')}
               >
-                {day.morning.map(entry => (
+                {day.morning && day.morning.map(entry => (
                   <div
                     key={entry.id}
                     className="week-entry"
                     style={{ backgroundColor: getCategoryColor(entry.category) }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      removeItem(day.date, 'morning', entry.id);
+                      handleEntryClick(entry);
                     }}
                   >
                     <div className="entry-category">{entry.category}</div>
@@ -209,14 +207,14 @@ function WeekView({ date }) {
                 className="week-period day-period"
                 onClick={() => handleSlotClick(new Date(day.date), 'day')}
               >
-                {day.day.map(entry => (
+                {day.day && day.day.map(entry => (
                   <div
                     key={entry.id}
                     className="week-entry"
                     style={{ backgroundColor: getCategoryColor(entry.category) }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      removeItem(day.date, 'day', entry.id);
+                      handleEntryClick(entry);
                     }}
                   >
                     <div className="entry-category">{entry.category}</div>
@@ -234,14 +232,14 @@ function WeekView({ date }) {
                 className="week-period evening-period"
                 onClick={() => handleSlotClick(new Date(day.date), 'evening')}
               >
-                {day.evening.map(entry => (
+                {day.evening && day.evening.map(entry => (
                   <div
                     key={entry.id}
                     className="week-entry"
                     style={{ backgroundColor: getCategoryColor(entry.category) }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      removeItem(day.date, 'evening', entry.id);
+                      handleEntryClick(entry);
                     }}
                   >
                     <div className="entry-category">{entry.category}</div>
@@ -296,7 +294,7 @@ function WeekView({ date }) {
               >
                 <option value="">Выберите категорию</option>
                 {categories.map(cat => (
-                  <option key={cat.name} value={cat.name}>{cat.name}</option>
+                  <option key={cat.id} value={cat.name}>{cat.name}</option>
                 ))}
               </select>
 
@@ -306,7 +304,7 @@ function WeekView({ date }) {
                   onChange={(e) => setSelectedPractice(e.target.value)}
                 >
                   <option value="">Выберите практику</option>
-                  {getCurrentCategory()?.practices.map(practice => (
+                  {getCategoryPractices(selectedCategory).map(practice => (
                     <option key={practice} value={practice}>{practice}</option>
                   ))}
                 </select>
@@ -352,6 +350,15 @@ function WeekView({ date }) {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Модальное окно для статуса выполнения */}
+      {selectedEntry && (
+        <EntryStatusModal
+          entry={selectedEntry}
+          onClose={() => setSelectedEntry(null)}
+          onStatusUpdate={loadWeekData}
+        />
       )}
     </div>
   );

@@ -15,38 +15,97 @@ const handleResponse = async (response) => {
 export const api = {
   // Получить записи за неделю
   getWeekEntries: async (date) => {
-    const response = await fetch(
-      `${API_BASE_URL}/entries/week?date=${date}&username=${USERNAME}`
-    );
-    return handleResponse(response);
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/calendar/week?date=${date}&username=${USERNAME}`
+      );
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (getWeekEntries):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
   },
 
   // Создать новую запись
   createEntry: async (entryData) => {
-    const response = await fetch(`${API_BASE_URL}/entries?username=${USERNAME}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(entryData),
-    });
-    return handleResponse(response);
+    try {
+      const response = await fetch(`${API_BASE_URL}/calendar?username=${USERNAME}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(entryData),
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (createEntry):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
   },
 
   // Удалить запись
   deleteEntry: async (entryId) => {
-    const response = await fetch(`${API_BASE_URL}/entries/${entryId}?username=${USERNAME}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      throw new Error('Ошибка удаления');
+    try {
+      const response = await fetch(`${API_BASE_URL}/calendar/${entryId}?username=${USERNAME}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Ошибка удаления');
+      }
+      return true;
+    } catch (error) {
+      console.error('API Error (deleteEntry):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
     }
-    return true;
   },
 
-  // Получить список категорий (добавим позже)
+  // Получить список категорий
   getCategories: async () => {
-    const response = await fetch(`${API_BASE_URL}/categories`);
-    return handleResponse(response);
+    try {
+      const response = await fetch(`${API_BASE_URL}/categories`);
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (getCategories):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  // Обновить статус записи
+  updateEntryStatus: async (entryId, statusData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/calendar/${entryId}/status?username=${USERNAME}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(statusData),
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (updateEntryStatus):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  // Получить стандарты для категории
+  getStandards: async (category) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/calendar/standards?category=${category}`);
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (getStandards):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  // Получить данные Yoga практики за дату
+  getYogaPractice: async (date) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/yoga/${date}`);
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (getYogaPractice):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
   }
-};
+}; // <-- Здесь закрываем объект
