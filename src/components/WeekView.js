@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
-import EntryStatusModal from './EntryStatusModal'; // Добавьте этот импорт
+import EntryStatusModal from './EntryStatusModal';
 
 function WeekView({ date }) {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedPeriod, setSelectedPeriod] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [selectedPractice, setSelectedPractice] = useState('');
   const [selectedDuration, setSelectedDuration] = useState('30 мин');
   const [repeatInterval, setRepeatInterval] = useState('');
   const [weekData, setWeekData] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [categoryPractices, setCategoryPractices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedEntry, setSelectedEntry] = useState(null); // Для модального окна статуса
+  const [selectedEntry, setSelectedEntry] = useState(null);
+  const [practicesLoading, setPracticesLoading] = useState(false);
 
   const timeOptions = ['5 мин', '10 мин', '15 мин', '30 мин', '31 мин', '60 мин', '90 мин', '120 мин', '180 мин'];
   const repeatOptions = ['Не повторять', 'Каждый день', 'Каждую неделю', 'Каждый месяц', 'Каждый год'];
@@ -29,12 +32,34 @@ function WeekView({ date }) {
     loadWeekData();
   }, [date]);
 
+  // Загружаем практики при выборе категории
+  useEffect(() => {
+    if (selectedCategoryId) {
+      loadCategoryPractices(selectedCategoryId);
+    } else {
+      setCategoryPractices([]);
+    }
+  }, [selectedCategoryId]);
+
   const loadCategories = async () => {
     try {
       const data = await api.getCategories();
       setCategories(data);
     } catch (err) {
       console.error('Error loading categories:', err);
+    }
+  };
+
+  const loadCategoryPractices = async (categoryId) => {
+    setPracticesLoading(true);
+    try {
+      const practices = await api.getCategoryPractices(categoryId);
+      setCategoryPractices(practices);
+    } catch (err) {
+      console.error('Error loading practices:', err);
+      setError('Ошибка загрузки практик');
+    } finally {
+      setPracticesLoading(false);
     }
   };
 
@@ -58,14 +83,13 @@ function WeekView({ date }) {
     return category?.color || '#ddd';
   };
 
-  const getCategoryPractices = (categoryName) => {
-    // Здесь нужно будет добавить практики для каждой категории
-    // Пока используем стандартные
-    return ['Ядро', 'Стандарт 1', 'Стандарт 2', 'Стандарт 3'];
-  };
-
-  const getCurrentCategory = () => {
-    return categories.find(c => c.name === selectedCategory);
+  const handleCategoryChange = (e) => {
+    const categoryName = e.target.value;
+    const category = categories.find(c => c.name === categoryName);
+    
+    setSelectedCategory(categoryName);
+    setSelectedCategoryId(category?.id || null);
+    setSelectedPractice(''); // Сбрасываем выбранную практику
   };
 
   const handleSlotClick = (day, periodId) => {
@@ -89,14 +113,17 @@ function WeekView({ date }) {
 
       await api.createEntry(newEntry);
       await loadWeekData();
-
+      
+      // Сброс формы
       setSelectedCategory('');
+      setSelectedCategoryId(null);
       setSelectedPractice('');
       setSelectedDuration('30 мин');
       setRepeatInterval('');
       setIsEditing(false);
       setSelectedDay(null);
       setSelectedPeriod(null);
+      setCategoryPractices([]);
     } catch (err) {
       setError(err.message);
       console.error('Error creating entry:', err);
@@ -175,16 +202,16 @@ function WeekView({ date }) {
               <div className="day-name">{day.dayName}</div>
               <div className="day-date">{formatDate(day.date)}</div>
             </div>
-
+            
             <div className="week-periods">
               {/* Утро */}
-              <div
+              <div 
                 className="week-period morning-period"
                 onClick={() => handleSlotClick(new Date(day.date), 'morning')}
               >
                 {day.morning && day.morning.map(entry => (
-                  <div
-                    key={entry.id}
+                  <div 
+                    key={entry.id} 
                     className="week-entry"
                     style={{ backgroundColor: getCategoryColor(entry.category) }}
                     onClick={(e) => {
@@ -203,13 +230,13 @@ function WeekView({ date }) {
               </div>
 
               {/* День */}
-              <div
+              <div 
                 className="week-period day-period"
                 onClick={() => handleSlotClick(new Date(day.date), 'day')}
               >
                 {day.day && day.day.map(entry => (
-                  <div
-                    key={entry.id}
+                  <div 
+                    key={entry.id} 
                     className="week-entry"
                     style={{ backgroundColor: getCategoryColor(entry.category) }}
                     onClick={(e) => {
@@ -228,13 +255,13 @@ function WeekView({ date }) {
               </div>
 
               {/* Вечер */}
-              <div
+              <div 
                 className="week-period evening-period"
                 onClick={() => handleSlotClick(new Date(day.date), 'evening')}
               >
                 {day.evening && day.evening.map(entry => (
-                  <div
-                    key={entry.id}
+                  <div 
+                    key={entry.id} 
                     className="week-entry"
                     style={{ backgroundColor: getCategoryColor(entry.category) }}
                     onClick={(e) => {
@@ -262,16 +289,20 @@ function WeekView({ date }) {
           setIsEditing(false);
           setSelectedDay(null);
           setSelectedPeriod(null);
+          setSelectedCategory('');
+          setSelectedCategoryId(null);
+          setSelectedPractice('');
+          setCategoryPractices([]);
         }}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h3>Добавить событие</h3>
             <div className="selected-info">
               {selectedDay && (
                 <p>
-                  {selectedDay.toLocaleDateString('ru-RU', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long'
+                  {selectedDay.toLocaleDateString('ru-RU', { 
+                    weekday: 'long', 
+                    day: 'numeric', 
+                    month: 'long' 
                   })}
                 </p>
               )}
@@ -283,33 +314,35 @@ function WeekView({ date }) {
                 </p>
               )}
             </div>
-
+            
             <div className="add-item-form">
               <select
                 value={selectedCategory}
-                onChange={(e) => {
-                  setSelectedCategory(e.target.value);
-                  setSelectedPractice('');
-                }}
+                onChange={handleCategoryChange}
               >
                 <option value="">Выберите категорию</option>
                 {categories.map(cat => (
                   <option key={cat.id} value={cat.name}>{cat.name}</option>
                 ))}
               </select>
-
+              
               {selectedCategory && (
                 <select
                   value={selectedPractice}
                   onChange={(e) => setSelectedPractice(e.target.value)}
+                  disabled={practicesLoading}
                 >
-                  <option value="">Выберите практику</option>
-                  {getCategoryPractices(selectedCategory).map(practice => (
-                    <option key={practice} value={practice}>{practice}</option>
+                  <option value="">
+                    {practicesLoading ? 'Загрузка практик...' : 'Выберите практику'}
+                  </option>
+                  {categoryPractices.map(practice => (
+                    <option key={practice.id} value={practice.name}>
+                      {practice.name}
+                    </option>
                   ))}
                 </select>
               )}
-
+              
               <select
                 value={selectedDuration}
                 onChange={(e) => setSelectedDuration(e.target.value)}
@@ -327,21 +360,25 @@ function WeekView({ date }) {
                   <option key={option} value={option}>{option}</option>
                 ))}
               </select>
-
+              
               <div className="form-actions">
-                <button
-                  onClick={addItem}
+                <button 
+                  onClick={addItem} 
                   className="add-btn"
-                  disabled={!selectedCategory || !selectedPractice}
+                  disabled={!selectedCategory || !selectedPractice || practicesLoading}
                 >
                   Добавить
                 </button>
-                <button
+                <button 
                   onClick={() => {
                     setIsEditing(false);
                     setSelectedDay(null);
                     setSelectedPeriod(null);
-                  }}
+                    setSelectedCategory('');
+                    setSelectedCategoryId(null);
+                    setSelectedPractice('');
+                    setCategoryPractices([]);
+                  }} 
                   className="cancel-btn"
                 >
                   Отмена
