@@ -177,20 +177,21 @@ export const api = {
     }
   },
 
-  deleteCategory: async (categoryId) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/categories/${categoryId}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Ошибка удаления категории');
-      }
-      return true;
-    } catch (error) {
-      console.error('API Error (deleteCategory):', error);
-      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+deleteCategory: async (categoryId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/categories/${categoryId}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(error || 'Ошибка удаления категории');
     }
-  },
+    return true;
+  } catch (error) {
+    console.error('API Error (deleteCategory):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
 
   // Управление практиками
   addPractice: async (categoryId, practiceData) => {

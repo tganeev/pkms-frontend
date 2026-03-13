@@ -80,7 +80,20 @@ function WeekView({ date }) {
 
   const getCategoryColor = (categoryName) => {
     const category = categories.find(c => c.name === categoryName);
-    return category?.color || '#ddd';
+    return category?.color || '#667eea';
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'completed':
+        return <span className="status-icon completed">✅</span>;
+      case 'partial':
+        return <span className="status-icon partial">⚠️</span>;
+      case 'failed':
+        return <span className="status-icon failed">❌</span>;
+      default:
+        return null;
+    }
   };
 
   const handleCategoryChange = (e) => {
@@ -89,7 +102,7 @@ function WeekView({ date }) {
     
     setSelectedCategory(categoryName);
     setSelectedCategoryId(category?.id || null);
-    setSelectedPractice(''); // Сбрасываем выбранную практику
+    setSelectedPractice('');
   };
 
   const handleSlotClick = (day, periodId) => {
@@ -144,6 +157,11 @@ function WeekView({ date }) {
 
   const handleEntryClick = (entry) => {
     setSelectedEntry(entry);
+  };
+
+  const handleStatusUpdate = () => {
+    loadWeekData();
+    setSelectedEntry(null);
   };
 
   const formatDate = (dateStr) => {
@@ -212,13 +230,14 @@ function WeekView({ date }) {
                 {day.morning && day.morning.map(entry => (
                   <div 
                     key={entry.id} 
-                    className="week-entry"
+                    className={`week-entry ${entry.status ? `status-${entry.status}` : ''}`}
                     style={{ backgroundColor: getCategoryColor(entry.category) }}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleEntryClick(entry);
                     }}
                   >
+                    {getStatusIcon(entry.status)}
                     <div className="entry-category">{entry.category}</div>
                     <div className="entry-practice">{entry.practice}</div>
                     <div className="entry-duration">⏱️ {entry.duration}</div>
@@ -237,13 +256,14 @@ function WeekView({ date }) {
                 {day.day && day.day.map(entry => (
                   <div 
                     key={entry.id} 
-                    className="week-entry"
+                    className={`week-entry ${entry.status ? `status-${entry.status}` : ''}`}
                     style={{ backgroundColor: getCategoryColor(entry.category) }}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleEntryClick(entry);
                     }}
                   >
+                    {getStatusIcon(entry.status)}
                     <div className="entry-category">{entry.category}</div>
                     <div className="entry-practice">{entry.practice}</div>
                     <div className="entry-duration">⏱️ {entry.duration}</div>
@@ -262,13 +282,14 @@ function WeekView({ date }) {
                 {day.evening && day.evening.map(entry => (
                   <div 
                     key={entry.id} 
-                    className="week-entry"
+                    className={`week-entry ${entry.status ? `status-${entry.status}` : ''}`}
                     style={{ backgroundColor: getCategoryColor(entry.category) }}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleEntryClick(entry);
                     }}
                   >
+                    {getStatusIcon(entry.status)}
                     <div className="entry-category">{entry.category}</div>
                     <div className="entry-practice">{entry.practice}</div>
                     <div className="entry-duration">⏱️ {entry.duration}</div>
@@ -394,7 +415,7 @@ function WeekView({ date }) {
         <EntryStatusModal
           entry={selectedEntry}
           onClose={() => setSelectedEntry(null)}
-          onStatusUpdate={loadWeekData}
+          onStatusUpdate={handleStatusUpdate}
         />
       )}
     </div>

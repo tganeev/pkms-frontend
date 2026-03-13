@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import CategoryTable from './CategoryTable';
 import CategoryManagement from './CategoryManagement';
+import ConfirmationModal from './ConfirmationModal';
 
 function CategoryMenu() {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [editingCategory, setEditingCategory] = useState(null);
   const [showManagement, setShowManagement] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -27,17 +30,32 @@ function CategoryMenu() {
     }
   };
 
-  const handleDeleteCategory = async (categoryId, categoryName) => {
-    if (!window.confirm(`Удалить категорию "${categoryName}"? Это также удалит все связанные практики.`)) {
-      return;
-    }
+  const handleDeleteClick = (category) => {
+    setCategoryToDelete(category);
+    setShowDeleteConfirmation(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!categoryToDelete) return;
     
     try {
-      await api.deleteCategory(categoryId);
+      await api.deleteCategory(categoryToDelete.id);
       await loadCategories();
+      setShowDeleteConfirmation(false);
+      setCategoryToDelete(null);
+      
+      // Если удаленная категория была выбрана, сбрасываем выбор
+      if (selectedCategory && selectedCategory.id === categoryToDelete.id) {
+        setSelectedCategory(null);
+      }
     } catch (err) {
       setError(err.message);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirmation(false);
+    setCategoryToDelete(null);
   };
 
   const getCategoryColor = (color) => {
@@ -84,12 +102,14 @@ function CategoryMenu() {
                     setEditingCategory(category);
                     setShowManagement(true);
                   }}
+                  title="Редактировать категорию"
                 >
                   ✏️
                 </button>
                 <button 
                   className="delete-btn"
-                  onClick={() => handleDeleteCategory(category.id, category.name)}
+                  onClick={() => handleDeleteClick(category)}
+                  title="Удалить категорию"
                 >
                   🗑️
                 </button>
@@ -131,14 +151,26 @@ function CategoryMenu() {
           onUpdate={() => {
             loadCategories();
             if (selectedCategory) {
-              // Если мы сейчас просматриваем категорию, обновим ее данные
-              api.getCategory(selectedCategory.id).then(updatedCategory => {
-      setSelectedCategory(updatedCategory);
-    });
+              api.getCategory(selectedCategory.id).then(setSelectedCategory);
             }
           }}
         />
       )}
+
+      {/* Модальное окно подтверждения удаления */}
+      <ConfirmationModal
+        isOpen={showDeleteConfirmation}
+        title="Удаление категории"
+        message={`Вы уверены, что хотите удалить категорию "${categoryToDelete?.name}"?`}
+        warning="Это действие также удалит:"
+        consequences={[
+          "Все практики в этой категории",
+          "Таблицу с данными категории",
+          "Все связанные записи в календаре"
+        ]}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </div>
   );
 }
