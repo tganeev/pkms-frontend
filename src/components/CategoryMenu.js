@@ -67,18 +67,21 @@ function CategoryMenu() {
 
   return (
     <div className="category-menu">
-      <div className="category-menu-header">
-        <h2>Категории</h2>
-        <button 
-          className="add-category-btn"
-          onClick={() => {
-            setEditingCategory(null);
-            setShowManagement(true);
-          }}
-        >
-          + Добавить категорию
-        </button>
-      </div>
+      {/* Показываем заголовок и кнопку только если не выбрана категория */}
+      {!selectedCategory && (
+        <div className="category-menu-header">
+          <h2>Категории</h2>
+          <button 
+            className="add-category-btn"
+            onClick={() => {
+              setEditingCategory(null);
+              setShowManagement(true);
+            }}
+          >
+            + Добавить категорию
+          </button>
+        </div>
+      )}
       
       {!selectedCategory ? (
         <div className="categories-grid">
@@ -157,7 +160,6 @@ function CategoryMenu() {
         />
       )}
 
-      {/* Модальное окно подтверждения удаления */}
       <ConfirmationModal
         isOpen={showDeleteConfirmation}
         title="Удаление категории"

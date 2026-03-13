@@ -8,18 +8,17 @@ function WeekView({ date }) {
   const [selectedPeriod, setSelectedPeriod] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
-  const [selectedPractice, setSelectedPractice] = useState('');
-  const [selectedDuration, setSelectedDuration] = useState('30 мин');
+  const [selectedStandard, setSelectedStandard] = useState('');
+  const [selectedStandardId, setSelectedStandardId] = useState(null);
   const [repeatInterval, setRepeatInterval] = useState('');
   const [weekData, setWeekData] = useState(null);
   const [categories, setCategories] = useState([]);
-  const [categoryPractices, setCategoryPractices] = useState([]);
+  const [categoryStandards, setCategoryStandards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedEntry, setSelectedEntry] = useState(null);
-  const [practicesLoading, setPracticesLoading] = useState(false);
+  const [standardsLoading, setStandardsLoading] = useState(false);
 
-  const timeOptions = ['5 мин', '10 мин', '15 мин', '30 мин', '31 мин', '60 мин', '90 мин', '120 мин', '180 мин'];
   const repeatOptions = ['Не повторять', 'Каждый день', 'Каждую неделю', 'Каждый месяц', 'Каждый год'];
 
   // Загружаем категории при монтировании компонента
@@ -32,12 +31,12 @@ function WeekView({ date }) {
     loadWeekData();
   }, [date]);
 
-  // Загружаем практики при выборе категории
+  // Загружаем стандарты при выборе категории
   useEffect(() => {
     if (selectedCategoryId) {
-      loadCategoryPractices(selectedCategoryId);
+      loadCategoryStandards(selectedCategoryId);
     } else {
-      setCategoryPractices([]);
+      setCategoryStandards([]);
     }
   }, [selectedCategoryId]);
 
@@ -50,16 +49,16 @@ function WeekView({ date }) {
     }
   };
 
-  const loadCategoryPractices = async (categoryId) => {
-    setPracticesLoading(true);
+  const loadCategoryStandards = async (categoryId) => {
+    setStandardsLoading(true);
     try {
-      const practices = await api.getCategoryPractices(categoryId);
-      setCategoryPractices(practices);
+      const standards = await api.getCategoryStandards(categoryId);
+      setCategoryStandards(standards);
     } catch (err) {
-      console.error('Error loading practices:', err);
-      setError('Ошибка загрузки практик');
+      console.error('Error loading standards:', err);
+      setError('Ошибка загрузки стандартов');
     } finally {
-      setPracticesLoading(false);
+      setStandardsLoading(false);
     }
   };
 
@@ -102,7 +101,16 @@ function WeekView({ date }) {
     
     setSelectedCategory(categoryName);
     setSelectedCategoryId(category?.id || null);
-    setSelectedPractice('');
+    setSelectedStandard('');
+    setSelectedStandardId(null);
+  };
+
+  const handleStandardChange = (e) => {
+    const standardName = e.target.value;
+    const standard = categoryStandards.find(s => s.name === standardName);
+    
+    setSelectedStandard(standardName);
+    setSelectedStandardId(standard?.id || null);
   };
 
   const handleSlotClick = (day, periodId) => {
@@ -112,13 +120,13 @@ function WeekView({ date }) {
   };
 
   const addItem = async () => {
-    if (!selectedCategory || !selectedPractice || !selectedDay || !selectedPeriod) return;
+    if (!selectedCategory || !selectedStandard || !selectedDay || !selectedPeriod) return;
 
     try {
+      // Длительность больше не нужна, она будет определяться стандартом
       const newEntry = {
         category: selectedCategory,
-        practice: selectedPractice,
-        duration: selectedDuration,
+        practice: selectedStandard, // Сохраняем название стандарта
         period: selectedPeriod,
         repeatInterval: repeatInterval,
         entryDate: selectedDay.toISOString().split('T')[0]
@@ -130,13 +138,13 @@ function WeekView({ date }) {
       // Сброс формы
       setSelectedCategory('');
       setSelectedCategoryId(null);
-      setSelectedPractice('');
-      setSelectedDuration('30 мин');
+      setSelectedStandard('');
+      setSelectedStandardId(null);
       setRepeatInterval('');
       setIsEditing(false);
       setSelectedDay(null);
       setSelectedPeriod(null);
-      setCategoryPractices([]);
+      setCategoryStandards([]);
     } catch (err) {
       setError(err.message);
       console.error('Error creating entry:', err);
@@ -240,7 +248,6 @@ function WeekView({ date }) {
                     {getStatusIcon(entry.status)}
                     <div className="entry-category">{entry.category}</div>
                     <div className="entry-practice">{entry.practice}</div>
-                    <div className="entry-duration">⏱️ {entry.duration}</div>
                     {entry.repeatInterval && entry.repeatInterval !== 'Не повторять' && (
                       <div className="entry-repeat">🔄</div>
                     )}
@@ -266,7 +273,6 @@ function WeekView({ date }) {
                     {getStatusIcon(entry.status)}
                     <div className="entry-category">{entry.category}</div>
                     <div className="entry-practice">{entry.practice}</div>
-                    <div className="entry-duration">⏱️ {entry.duration}</div>
                     {entry.repeatInterval && entry.repeatInterval !== 'Не повторять' && (
                       <div className="entry-repeat">🔄</div>
                     )}
@@ -292,7 +298,6 @@ function WeekView({ date }) {
                     {getStatusIcon(entry.status)}
                     <div className="entry-category">{entry.category}</div>
                     <div className="entry-practice">{entry.practice}</div>
-                    <div className="entry-duration">⏱️ {entry.duration}</div>
                     {entry.repeatInterval && entry.repeatInterval !== 'Не повторять' && (
                       <div className="entry-repeat">🔄</div>
                     )}
@@ -312,8 +317,9 @@ function WeekView({ date }) {
           setSelectedPeriod(null);
           setSelectedCategory('');
           setSelectedCategoryId(null);
-          setSelectedPractice('');
-          setCategoryPractices([]);
+          setSelectedStandard('');
+          setSelectedStandardId(null);
+          setCategoryStandards([]);
         }}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h3>Добавить событие</h3>
@@ -349,29 +355,20 @@ function WeekView({ date }) {
               
               {selectedCategory && (
                 <select
-                  value={selectedPractice}
-                  onChange={(e) => setSelectedPractice(e.target.value)}
-                  disabled={practicesLoading}
+                  value={selectedStandard}
+                  onChange={handleStandardChange}
+                  disabled={standardsLoading}
                 >
                   <option value="">
-                    {practicesLoading ? 'Загрузка практик...' : 'Выберите практику'}
+                    {standardsLoading ? 'Загрузка стандартов...' : 'Выберите стандарт'}
                   </option>
-                  {categoryPractices.map(practice => (
-                    <option key={practice.id} value={practice.name}>
-                      {practice.name}
+                  {categoryStandards.map(standard => (
+                    <option key={standard.id} value={standard.name}>
+                      {standard.name}
                     </option>
                   ))}
                 </select>
               )}
-              
-              <select
-                value={selectedDuration}
-                onChange={(e) => setSelectedDuration(e.target.value)}
-              >
-                {timeOptions.map(time => (
-                  <option key={time} value={time}>{time}</option>
-                ))}
-              </select>
 
               <select
                 value={repeatInterval}
@@ -386,7 +383,7 @@ function WeekView({ date }) {
                 <button 
                   onClick={addItem} 
                   className="add-btn"
-                  disabled={!selectedCategory || !selectedPractice || practicesLoading}
+                  disabled={!selectedCategory || !selectedStandard || standardsLoading}
                 >
                   Добавить
                 </button>
@@ -397,8 +394,9 @@ function WeekView({ date }) {
                     setSelectedPeriod(null);
                     setSelectedCategory('');
                     setSelectedCategoryId(null);
-                    setSelectedPractice('');
-                    setCategoryPractices([]);
+                    setSelectedStandard('');
+                    setSelectedStandardId(null);
+                    setCategoryStandards([]);
                   }} 
                   className="cancel-btn"
                 >

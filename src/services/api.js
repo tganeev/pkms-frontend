@@ -237,6 +237,64 @@ getCategoryPractices: async (categoryId) => {
     }
   },
 
+  // Стандарты
+getCategoryStandards: async (categoryId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/categories/${categoryId}/standards`);
+    return handleResponse(response);
+  } catch (error) {
+    console.error('API Error (getCategoryStandards):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
+
+createStandard: async (categoryId, standardData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/categories/${categoryId}/standards`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(standardData),
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error('API Error (createStandard):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
+
+updateStandard: async (standardId, standardData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/categories/standards/${standardId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(standardData),
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error('API Error (updateStandard):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
+
+deleteStandard: async (standardId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/categories/standards/${standardId}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      throw new Error('Ошибка удаления стандарта');
+    }
+    return true;
+  } catch (error) {
+    console.error('API Error (deleteStandard):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
+
   deletePractice: async (practiceId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/categories/practices/${practiceId}`, {
