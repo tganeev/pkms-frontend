@@ -5,6 +5,7 @@ import MonthView from './components/MonthView';
 import YearView from './components/YearView';
 import Profile from './components/Profile';
 import CategoryMenu from './components/CategoryMenu';
+import StandardsStats from './components/StandardsStats';
 import { WeekProvider } from './context/WeekContext';
 
 function App() {
@@ -35,6 +36,8 @@ function App() {
         />;
       case 'categories':
         return <CategoryMenu />;
+      case 'standards':
+        return <StandardsStats />;
       case 'profile':
         return <Profile />;
       default:
@@ -70,6 +73,12 @@ function App() {
             onClick={() => setActiveView('categories')}
           >
             📊 Категории
+          </button>
+          <button 
+            className={activeView === 'standards' ? 'active' : ''}
+            onClick={() => setActiveView('standards')}
+          >
+            📈 Стандарты
           </button>
           <button 
             className={activeView === 'profile' ? 'active' : ''}

@@ -5,6 +5,8 @@ function StandardModal({ category, standard, onClose, onUpdate }) {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: '',
     practices: []
   });
   const [categoryPractices, setCategoryPractices] = useState([]);
@@ -17,6 +19,8 @@ function StandardModal({ category, standard, onClose, onUpdate }) {
       setFormData({
         name: standard.name || '',
         description: standard.description || '',
+        startDate: standard.startDate || new Date().toISOString().split('T')[0],
+        endDate: standard.endDate || '',
         practices: standard.practices || []
       });
     }
@@ -41,6 +45,13 @@ function StandardModal({ category, standard, onClose, onUpdate }) {
     } catch (err) {
       setError(err.message);
     }
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
   const handlePracticeChange = (practiceId, field, value) => {
@@ -80,6 +91,8 @@ function StandardModal({ category, standard, onClose, onUpdate }) {
       const standardData = {
         name: formData.name,
         description: formData.description,
+        startDate: formData.startDate,
+        endDate: formData.endDate || null,
         practices: activePractices
       };
       
@@ -116,8 +129,9 @@ function StandardModal({ category, standard, onClose, onUpdate }) {
             <label>Название стандарта *</label>
             <input
               type="text"
+              name="name"
               value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              onChange={handleChange}
               required
               placeholder="например: Ядро, Стандарт 1"
             />
@@ -126,11 +140,37 @@ function StandardModal({ category, standard, onClose, onUpdate }) {
           <div className="form-group">
             <label>Описание</label>
             <textarea
+              name="description"
               value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              onChange={handleChange}
               rows="3"
               placeholder="Описание стандарта"
             />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>Дата ввода стандарта *</label>
+              <input
+                type="date"
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Дата вывода стандарта</label>
+              <input
+                type="date"
+                name="endDate"
+                value={formData.endDate}
+                onChange={handleChange}
+                min={formData.startDate}
+              />
+              <small className="field-hint">Оставьте пустым, если стандарт действует бессрочно</small>
+            </div>
           </div>
           
           <h4>Практики в стандарте</h4>

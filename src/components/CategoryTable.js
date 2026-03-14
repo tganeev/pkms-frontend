@@ -56,16 +56,27 @@ function CategoryTable({ category }) {
     }
   };
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return 'бессрочно';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('ru-RU');
+  };
+
+  const getStatusBadge = (standard) => {
+    const today = new Date().toISOString().split('T')[0];
+    const isActive = (!standard.endDate || standard.endDate >= today) && 
+                     standard.startDate <= today;
+    
+    return isActive ? 
+      <span className="status-badge active">Действующий</span> : 
+      <span className="status-badge inactive">Недействующий</span>;
+  };
+
   const handleDateChange = (e) => {
     setDateRange({
       ...dateRange,
       [e.target.name]: e.target.value
     });
-  };
-
-  const formatDate = (dateStr) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('ru-RU');
   };
 
   if (loading) return <div className="loading">Загрузка данных...</div>;
@@ -114,9 +125,24 @@ function CategoryTable({ category }) {
                     </button>
                   </div>
                 </div>
+                
+                {getStatusBadge(standard)}
+                
                 {standard.description && (
                   <p className="standard-description">{standard.description}</p>
                 )}
+                
+                <div className="standard-dates">
+                  <div className="date-item">
+                    <span className="date-label">Ввод:</span>
+                    <span className="date-value">{formatDate(standard.startDate)}</span>
+                  </div>
+                  <div className="date-item">
+                    <span className="date-label">Вывод:</span>
+                    <span className="date-value">{formatDate(standard.endDate)}</span>
+                  </div>
+                </div>
+                
                 <div className="standard-practices">
                   {standard.practices.map(p => (
                     <div key={p.id} className="standard-practice-item">
@@ -166,7 +192,7 @@ function CategoryTable({ category }) {
           </thead>
           <tbody>
             {tableData.rows.map(row => {
-              const formattedDate = formatDate(row.date);
+              const formattedDate = new Date(row.date).toLocaleDateString('ru-RU');
               return (
                 <tr key={row.date}>
                   <td>{formattedDate}</td>

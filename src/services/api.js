@@ -248,6 +248,17 @@ getCategoryStandards: async (categoryId) => {
   }
 },
 
+// Стандарты - статистика
+getAllStandardsStats: async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/standards/stats`);
+    return handleResponse(response);
+  } catch (error) {
+    console.error('API Error (getAllStandardsStats):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
+
 createStandard: async (categoryId, standardData) => {
   try {
     const response = await fetch(`${API_BASE_URL}/categories/${categoryId}/standards`, {

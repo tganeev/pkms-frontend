@@ -1925,3 +1925,243 @@ body {
   border-color: #667eea;
   outline: none;
 }
+
+/* Стандарты - статистика */
+.standards-stats-container {
+  padding: 20px;
+}
+
+.stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.stats-header h2 {
+  color: #333;
+  margin: 0;
+}
+
+.category-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.category-filter label {
+  color: #666;
+  font-weight: 500;
+}
+
+.category-filter select {
+  padding: 8px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 200px;
+}
+
+.category-filter select:focus {
+  border-color: #667eea;
+  outline: none;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.stat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.stat-card-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge.inactive {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.stat-category {
+  margin-bottom: 15px;
+  color: #666;
+  font-size: 14px;
+}
+
+.stat-dates {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.date-item {
+  display: flex;
+  gap: 5px;
+}
+
+.date-item span:first-child {
+  color: #666;
+}
+
+.date-item span:last-child {
+  font-weight: 600;
+  color: #333;
+}
+
+.stat-counters {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.counter-item {
+  flex: 1;
+  background: #e3f2fd;
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.counter-label {
+  display: block;
+  font-size: 11px;
+  color: #1976d2;
+  margin-bottom: 4px;
+}
+
+.counter-value {
+  display: block;
+  font-size: 20px;
+  font-weight: bold;
+  color: #0d47a1;
+}
+
+.stat-practices {
+  margin-top: 15px;
+}
+
+.stat-practices h4 {
+  margin: 0 0 10px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.practice-stat-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px dashed #e0e0e0;
+  font-size: 13px;
+}
+
+.practice-stat-item:last-child {
+  border-bottom: none;
+}
+
+.practice-name {
+  color: #666;
+}
+
+.practice-target {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Стандарты в категории */
+.standard-dates {
+  display: flex;
+  gap: 15px;
+  margin: 10px 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.standard-dates .date-item {
+  display: flex;
+  gap: 5px;
+}
+
+.standard-dates .date-label {
+  color: #999;
+}
+
+.standard-dates .date-value {
+  font-weight: 500;
+  color: #333;
+}
+
+/* Поле подсказка */
+.field-hint {
+  display: block;
+  font-size: 11px;
+  color: #999;
+  margin-top: 4px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .stats-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .category-filter {
+    width: 100%;
+  }
+  
+  .category-filter select {
+    width: 100%;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stat-dates {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
