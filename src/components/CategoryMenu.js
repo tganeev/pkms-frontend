@@ -44,7 +44,6 @@ function CategoryMenu() {
       setShowDeleteConfirmation(false);
       setCategoryToDelete(null);
       
-      // Если удаленная категория была выбрана, сбрасываем выбор
       if (selectedCategory && selectedCategory.id === categoryToDelete.id) {
         setSelectedCategory(null);
       }
@@ -67,7 +66,6 @@ function CategoryMenu() {
 
   return (
     <div className="category-menu">
-      {/* Показываем заголовок и кнопку только если не выбрана категория */}
       {!selectedCategory && (
         <div className="category-menu-header">
           <h2>Категории</h2>
@@ -121,27 +119,14 @@ function CategoryMenu() {
           ))}
         </div>
       ) : (
-        <div className="category-view">
-          <div className="category-header">
-            <button 
-              className="back-btn"
-              onClick={() => setSelectedCategory(null)}
-            >
-              ← Назад
-            </button>
-            <h3>{selectedCategory.name}</h3>
-            <button 
-              className="edit-btn"
-              onClick={() => {
-                setEditingCategory(selectedCategory);
-                setShowManagement(true);
-              }}
-            >
-              ✏️ Редактировать
-            </button>
-          </div>
-          <CategoryTable category={selectedCategory} />
-        </div>
+        <CategoryTable 
+          category={selectedCategory} 
+          onBack={() => setSelectedCategory(null)}
+          onEditCategory={(cat) => {
+            setEditingCategory(cat);
+            setShowManagement(true);
+          }}
+        />
       )}
 
       {showManagement && (

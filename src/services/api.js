@@ -237,6 +237,64 @@ getCategoryPractices: async (categoryId) => {
     }
   },
 
+  // Получить все связанные практики для данной практики
+getPracticeLinks: async (practiceId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/practices/${practiceId}/links`);
+    return handleResponse(response);
+  } catch (error) {
+    console.error('API Error (getPracticeLinks):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
+
+// Добавить связь между практиками
+addPracticeLink: async (sourcePracticeId, targetPracticeId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/practices/links`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        sourcePracticeId: sourcePracticeId,
+        targetPracticeId: targetPracticeId
+      }),
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error('API Error (addPracticeLink):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
+
+// Удалить связь между практиками
+deletePracticeLink: async (linkId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/practices/links/${linkId}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      throw new Error('Ошибка удаления связи');
+    }
+    return true;
+  } catch (error) {
+    console.error('API Error (deletePracticeLink):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
+
+// Получить все практики для выбора источника
+getAllPractices: async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/practices/all`);
+    return handleResponse(response);
+  } catch (error) {
+    console.error('API Error (getAllPractices):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
+
   // Стандарты
 getCategoryStandards: async (categoryId) => {
   try {
