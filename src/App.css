@@ -1005,21 +1005,30 @@ body {
   white-space: nowrap;
 }
 
+
+
 .category-table th:first-child,
 .category-table td:first-child {
-  width: 100px;
   min-width: 100px;
-  max-width: 100px;
   text-align: center;
   background: #f8f9fa;
   position: sticky;
   left: 0;
-  z-index: 5;
+  z-index: 15;
   font-weight: 500;
   color: #333;
   border-right: 2px solid #e0e0e0;
-  font-family: monospace;
-  font-size: 13px;
+  font-family: inherit; /* Убираем monospace */
+  font-size: 14px; /* Одинаковый размер с практиками */
+  background-clip: padding-box;
+}
+
+/* Заголовок первой колонки тоже должен быть виден при прокрутке */
+.category-table thead th:first-child {
+  z-index: 25;
+  background: #5a67d8; /* Чуть темнее для контраста */
+  color: white;
+  border-right: 2px solid #4a56b0;
 }
 
 .category-table th:not(:first-child),
@@ -2686,10 +2695,6 @@ body {
   color: #666;
 }
 
-.practice-value {
-  font-weight: 600;
-  color: #333;
-}
 
 /* Анимации */
 @keyframes fadeIn {
@@ -3199,5 +3204,236 @@ body {
     transform: rotate(90deg);
   }
 }
+
+/* Режим просмотра статуса */
+.status-view-mode {
+  padding: 20px 0;
+}
+
+.current-status {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.status-label {
+  font-weight: 600;
+  color: #666;
+}
+
+.status-badge-large {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.status-badge-large.completed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge-large.partial {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-badge-large.failed {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.status-notes {
+  padding: 15px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.notes-label {
+  font-weight: 600;
+  color: #666;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.notes-text {
+  color: #333;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.view-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.view-actions .edit-btn {
+  padding: 10px 20px;
+  background: #4ecdc4;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.view-actions .delete-btn {
+  padding: 10px 20px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+/* Модальное окно подтверждения удаления */
+.confirm-delete-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.confirm-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.confirm-content h4 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.confirm-content p {
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.confirm-content .warning {
+  color: #e74c3c;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.confirm-actions button {
+  padding: 10px 25px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+/* Кнопка закрытия модального окна */
+.modal-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: rgba(0, 0, 0, 0.1);
+  color: #666;
+  font-size: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.modal-close-btn:hover {
+  background: rgba(0, 0, 0, 0.2);
+  transform: rotate(90deg);
+}
+
+/* Обновляем позиционирование для модального окна */
+.modal-content {
+  position: relative;
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  animation: slideUp 0.3s ease;
+}
+
+/* Стили для кнопок в режиме просмотра */
+.view-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.view-actions .edit-btn,
+.view-actions .delete-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  min-width: 140px;
+}
+
+.view-actions .edit-btn {
+  background: #4ecdc4;
+  color: white;
+}
+
+.view-actions .edit-btn:hover {
+  background: #45b7b0;
+  transform: translateY(-2px);
+}
+
+.view-actions .delete-btn {
+  background: #e74c3c;
+  color: white;
+}
+
+.view-actions .delete-btn:hover {
+  background: #c0392b;
+  transform: translateY(-2px);
+}
+
 
 

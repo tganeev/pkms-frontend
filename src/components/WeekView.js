@@ -49,18 +49,33 @@ function WeekView({ date, setDate }) {  // Добавляем setDate в про�
     }
   };
 
-  const loadCategoryStandards = async (categoryId) => {
-    setStandardsLoading(true);
-    try {
-      const standards = await api.getCategoryStandards(categoryId);
-      setCategoryStandards(standards);
-    } catch (err) {
-      console.error('Error loading standards:', err);
-      setError('Ошибка загрузки стандартов');
-    } finally {
-      setStandardsLoading(false);
-    }
-  };
+const loadCategoryStandards = async (categoryId) => {
+  setStandardsLoading(true);
+  try {
+    const standards = await api.getCategoryStandards(categoryId);
+    
+    // Фильтруем стандарты по статусу, а не по дате
+    const activeStandards = standards.filter(standard => {
+      // Используем поле active из ответа API
+      // Если API не возвращает active, вычисляем сами
+      if (standard.active !== undefined) {
+        return standard.active === true;
+      } else {
+        // Если active нет, вычисляем по датам
+        const today = new Date().toISOString().split('T')[0];
+        return !standard.endDate || standard.endDate >= today;
+      }
+    });
+    
+    console.log('Active standards:', activeStandards);
+    setCategoryStandards(activeStandards);
+  } catch (err) {
+    console.error('Error loading standards:', err);
+    setError('Ошибка загрузки стандартов');
+  } finally {
+    setStandardsLoading(false);
+  }
+};
 
   const loadWeekData = async () => {
     setLoading(true);

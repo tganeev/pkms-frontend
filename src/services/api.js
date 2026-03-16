@@ -57,12 +57,18 @@ export const api = {
   // Удалить запись
   deleteEntry: async (entryId) => {
     try {
+      console.log(`Deleting entry with ID: ${entryId}`);
       const response = await fetch(`${API_BASE_URL}/calendar/${entryId}?username=${USERNAME}`, {
         method: 'DELETE',
       });
+      
       if (!response.ok) {
-        throw new Error('Ошибка удаления');
+        const errorText = await response.text();
+        console.error(`Delete failed with status ${response.status}: ${errorText}`);
+        throw new Error(`Ошибка удаления: ${response.status} - ${errorText}`);
       }
+      
+      console.log(`Successfully deleted entry ${entryId}`);
       return true;
     } catch (error) {
       console.error('API Error (deleteEntry):', error);
@@ -177,21 +183,21 @@ export const api = {
     }
   },
 
-deleteCategory: async (categoryId) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/categories/${categoryId}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(error || 'Ошибка удаления категории');
+  deleteCategory: async (categoryId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/categories/${categoryId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || 'Ошибка удаления категории');
+      }
+      return true;
+    } catch (error) {
+      console.error('API Error (deleteCategory):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
     }
-    return true;
-  } catch (error) {
-    console.error('API Error (deleteCategory):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
+  },
 
   // Управление практиками
   addPractice: async (categoryId, practiceData) => {
@@ -209,17 +215,6 @@ deleteCategory: async (categoryId) => {
       throw new Error(`Ошибка подключения к серверу: ${error.message}`);
     }
   },
-  // Получить практики категории по ID
-getCategoryPractices: async (categoryId) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/categories/${categoryId}`);
-    const categoryData = await handleResponse(response);
-    return categoryData.practices || [];
-  } catch (error) {
-    console.error('API Error (getCategoryPractices):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
 
   updatePractice: async (practiceId, practiceData) => {
     try {
@@ -237,133 +232,6 @@ getCategoryPractices: async (categoryId) => {
     }
   },
 
-  // Получить все связанные практики для данной практики
-getPracticeLinks: async (practiceId) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/practices/${practiceId}/links`);
-    return handleResponse(response);
-  } catch (error) {
-    console.error('API Error (getPracticeLinks):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
-
-// Добавить связь между практиками
-addPracticeLink: async (sourcePracticeId, targetPracticeId) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/practices/links`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        sourcePracticeId: sourcePracticeId,
-        targetPracticeId: targetPracticeId
-      }),
-    });
-    return handleResponse(response);
-  } catch (error) {
-    console.error('API Error (addPracticeLink):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
-
-// Удалить связь между практиками
-deletePracticeLink: async (linkId) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/practices/links/${linkId}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      throw new Error('Ошибка удаления связи');
-    }
-    return true;
-  } catch (error) {
-    console.error('API Error (deletePracticeLink):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
-
-// Получить все практики для выбора источника
-getAllPractices: async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/practices/all`);
-    return handleResponse(response);
-  } catch (error) {
-    console.error('API Error (getAllPractices):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
-
-  // Стандарты
-getCategoryStandards: async (categoryId) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/categories/${categoryId}/standards`);
-    return handleResponse(response);
-  } catch (error) {
-    console.error('API Error (getCategoryStandards):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
-
-// Стандарты - статистика
-getAllStandardsStats: async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/standards/stats`);
-    return handleResponse(response);
-  } catch (error) {
-    console.error('API Error (getAllStandardsStats):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
-
-createStandard: async (categoryId, standardData) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/categories/${categoryId}/standards`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(standardData),
-    });
-    return handleResponse(response);
-  } catch (error) {
-    console.error('API Error (createStandard):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
-
-updateStandard: async (standardId, standardData) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/categories/standards/${standardId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(standardData),
-    });
-    return handleResponse(response);
-  } catch (error) {
-    console.error('API Error (updateStandard):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
-
-deleteStandard: async (standardId) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/categories/standards/${standardId}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      throw new Error('Ошибка удаления стандарта');
-    }
-    return true;
-  } catch (error) {
-    console.error('API Error (deleteStandard):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
-
   deletePractice: async (practiceId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/categories/practices/${practiceId}`, {
@@ -375,6 +243,156 @@ deleteStandard: async (standardId) => {
       return true;
     } catch (error) {
       console.error('API Error (deletePractice):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  // Скопировать практики из другой категории
+  copyPracticesFromCategory: async (targetCategoryId, sourceCategoryId, practiceIds) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/categories/${targetCategoryId}/copy-practices`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sourceCategoryId: sourceCategoryId,
+          practiceIds: practiceIds
+        }),
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (copyPracticesFromCategory):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  // Получить все связанные практики для данной практики
+  getPracticeLinks: async (practiceId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/practices/${practiceId}/links`);
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (getPracticeLinks):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  // Добавить связь между практиками
+  addPracticeLink: async (sourcePracticeId, targetPracticeId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/practices/links`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sourcePracticeId: sourcePracticeId,
+          targetPracticeId: targetPracticeId
+        }),
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (addPracticeLink):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  // Удалить связь между практиками
+  deletePracticeLink: async (linkId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/practices/links/${linkId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Ошибка удаления связи');
+      }
+      return true;
+    } catch (error) {
+      console.error('API Error (deletePracticeLink):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  // Получить все практики для выбора источника
+  getAllPractices: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/practices/all`);
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (getAllPractices):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  // Стандарты - статистика
+  getAllStandardsStats: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/standards/stats`);
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (getAllStandardsStats):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  // Получить стандарты категории
+  getCategoryStandards: async (categoryId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/categories/${categoryId}/standards`);
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (getCategoryStandards):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  // Создать стандарт
+  createStandard: async (categoryId, standardData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/categories/${categoryId}/standards`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(standardData),
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (createStandard):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  // Обновить стандарт
+  updateStandard: async (standardId, standardData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/standards/${standardId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(standardData),
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (updateStandard):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  // Удалить стандарт
+  deleteStandard: async (standardId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/standards/${standardId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Ошибка удаления стандарта');
+      }
+      return true;
+    } catch (error) {
+      console.error('API Error (deleteStandard):', error);
       throw new Error(`Ошибка подключения к серверу: ${error.message}`);
     }
   }
