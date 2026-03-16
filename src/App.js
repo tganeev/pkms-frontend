@@ -17,7 +17,10 @@ function App() {
       case 'week':
         return (
           <WeekProvider>
-            <WeekView date={selectedDate} />
+            <WeekView 
+              date={selectedDate} 
+              setDate={setSelectedDate}  // Передаем функцию для изменения даты
+            />
           </WeekProvider>
         );
       case 'month':

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import EntryStatusModal from './EntryStatusModal';
 
-function WeekView({ date }) {
+function WeekView({ date, setDate }) {  // Добавляем setDate в пропсы
   const [isEditing, setIsEditing] = useState(false);
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedPeriod, setSelectedPeriod] = useState(null);
@@ -67,7 +67,7 @@ function WeekView({ date }) {
     setError(null);
     try {
       const formattedDate = date.toISOString().split('T')[0];
-      const data = await api.getWeekEntries(formattedDate);
+      const data = await api.getWeekEntries(formattedDate, 'test');
       setWeekData(data);
     } catch (err) {
       setError(err.message);
@@ -123,19 +123,17 @@ function WeekView({ date }) {
     if (!selectedCategory || !selectedStandard || !selectedDay || !selectedPeriod) return;
 
     try {
-      // Длительность больше не нужна, она будет определяться стандартом
       const newEntry = {
         category: selectedCategory,
-        practice: selectedStandard, // Сохраняем название стандарта
+        practice: selectedStandard,
         period: selectedPeriod,
         repeatInterval: repeatInterval,
         entryDate: selectedDay.toISOString().split('T')[0]
       };
 
-      await api.createEntry(newEntry);
+      await api.createEntry(newEntry, 'test');
       await loadWeekData();
       
-      // Сброс формы
       setSelectedCategory('');
       setSelectedCategoryId(null);
       setSelectedStandard('');
@@ -155,7 +153,7 @@ function WeekView({ date }) {
     if (!window.confirm('Удалить запись?')) return;
 
     try {
-      await api.deleteEntry(entryId);
+      await api.deleteEntry(entryId, 'test');
       await loadWeekData();
     } catch (err) {
       setError(err.message);
@@ -179,20 +177,21 @@ function WeekView({ date }) {
 
   const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
+  // Исправленные функции навигации
   const handlePrevWeek = () => {
     const newDate = new Date(date);
     newDate.setDate(date.getDate() - 7);
-    window.location.reload();
+    setDate(newDate); // Используем setDate из пропсов
   };
 
   const handleNextWeek = () => {
     const newDate = new Date(date);
     newDate.setDate(date.getDate() + 7);
-    window.location.reload();
+    setDate(newDate); // Используем setDate из пропсов
   };
 
   const handleToday = () => {
-    window.location.reload();
+    setDate(new Date()); // Устанавливаем текущую дату
   };
 
   if (loading) return <div className="loading">Загрузка...</div>;
