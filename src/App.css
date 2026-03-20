@@ -3527,6 +3527,8 @@ body {
   cursor: col-resize;
 }
 
+
+
 .right-panel {
   flex: 1;
   display: flex;
@@ -3768,4 +3770,858 @@ body {
     width: 60px;
   }
 }
+
+
+
+/* Стили для правой области с разделительными линиями */
+.dates-header {
+  display: flex;
+  padding: 12px 0;
+  border-bottom: 2px solid #333;
+}
+
+.date-column {
+  width: 80px;
+  flex-shrink: 0;
+  text-align: center;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+
+.date-column:first-child {
+  border-left: none;
+}
+
+.date-column:last-child {
+  border-right: none;
+}
+
+
+
+.date-subheader {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  font-size: 11px;
+  color: #666;
+  padding: 4px 0;
+}
+
+.right-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.stats-row {
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.stats-row:last-child {
+  border-bottom: none;
+}
+
+.stat-cell {
+  width: 80px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: background 0.2s ease;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+
+.stat-cell:first-child {
+  border-left: none;
+}
+
+.stat-cell:last-child {
+  border-right: none;
+}
+
+.stat-cell:hover {
+  background: #e3f2fd;
+}
+
+.pages-value, .hours-value {
+  width: 30px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.pages-value {
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.hours-value {
+  color: #e65100;
+  font-weight: 500;
+}
+
+.library-footer {
+  padding: 15px 20px;
+  border-top: 2px solid #e0e0e0;
+  background: #f8f9fa;
+}
+
+.period-totals {
+  display: flex;
+  gap: 20px;
+  justify-content: flex-end;
+  font-size: 14px;
+}
+
+.total-label {
+  color: #666;
+}
+
+.total-pages {
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.total-hours {
+  color: #e65100;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .left-panel {
+    width: 400px !important;
+  }
+  
+  .book-title {
+    width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .library-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .date-range-selector {
+    flex-direction: column;
+  }
+  
+  .left-panel {
+    width: 300px !important;
+  }
+  
+  .book-title {
+    width: 120px;
+  }
+  
+  .book-author {
+    width: 100px;
+  }
+  
+  .date-column {
+    width: 60px;
+  }
+  
+  .stat-cell {
+    width: 60px;
+  }
+}
+
+/* Library Styles - обновленные для выравнивания */
+.left-header, .right-header {
+  position: sticky;
+  top: 0;
+  background: #f8f9fa;
+  z-index: 10;
+  border-bottom: 2px solid #667eea;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.left-header {
+  padding: 12px 0;
+  font-weight: bold;
+  color: #333;
+  height: auto;
+  min-height: 70px;
+}
+
+.right-header {
+  padding: 0;
+  height: auto;
+  min-height: 70px;
+}
+
+.dates-header {
+  display: flex;
+  padding: 12px 0;
+  border-bottom: 2px solid #333;
+  height: 100%;
+  align-items: center;
+}
+
+/* Выравнивание строк для синхронизации с левой панелью */
+.left-body, .right-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.book-row, .stats-row {
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  align-items: center;
+  min-height: 50px;
+  box-sizing: border-box;
+}
+
+/* Гарантируем одинаковую высоту строк */
+.book-row {
+  min-height: 50px;
+}
+
+.stats-row {
+  min-height: 50px;
+}
+
+/* Стили для колонок в левой панели */
+.book-number {
+  width: 50px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.book-title {
+  width: 200px;
+  padding: 0 8px;
+  flex-shrink: 0;
+  word-break: break-word;
+}
+
+.book-author {
+  width: 150px;
+  padding: 0 8px;
+  flex-shrink: 0;
+  word-break: break-word;
+}
+
+.book-status {
+  width: 120px;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.book-category {
+  width: 120px;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.book-actions {
+  width: 80px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Убеждаемся, что ячейки статистики имеют одинаковую высоту */
+.stat-cell {
+  width: 80px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 8px 0;
+  transition: background 0.2s ease;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  min-height: 34px;
+  align-items: center;
+}
+
+/* Стили для дат */
+.date-column {
+  width: 80px;
+  flex-shrink: 0;
+  text-align: center;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.date-column:first-child {
+  border-left: none;
+}
+
+.date-column:last-child {
+  border-right: none;
+}
+
+.date-label {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #333;
+}
+
+.date-subheader {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  font-size: 11px;
+  color: #666;
+  padding: 4px 0;
+}
+
+.pages-value, .hours-value {
+  width: 30px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.pages-value {
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.hours-value {
+  color: #e65100;
+  font-weight: 500;
+}
+
+/* Library Styles */
+.library-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.library-header {
+  padding: 20px;
+  border-bottom: 2px solid #e0e0e0;
+  flex-shrink: 0;
+}
+
+.library-header h2 {
+  margin: 0 0 15px 0;
+  color: #333;
+}
+
+.library-controls {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.add-book-btn {
+  padding: 10px 20px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.add-book-btn:hover {
+  background: #218838;
+  transform: translateY(-2px);
+}
+
+.date-range-selector {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.date-range-selector label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #666;
+}
+
+.date-range-selector input {
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.library-content {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.left-panel {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: white;
+  border-right: 1px solid #e0e0e0;
+}
+
+.right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-x: auto;
+  overflow-y: hidden;
+  min-width: 0;
+}
+
+/* Левая панель - заголовок */
+.left-header {
+  position: sticky;
+  top: 0;
+  background: #f8f9fa;
+  z-index: 10;
+  border-bottom: 3px solid rgb(231, 229, 229);
+  display: flex;
+  padding: 12px 0;
+  font-weight: bold;
+  color: #333;
+  flex-shrink: 0;
+}
+
+.left-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.book-row {
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  align-items: center;
+  min-height: 50px;
+}
+
+.book-row:hover {
+  background: #f8f9fa;
+}
+
+.book-number {
+  width: 50px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.book-title {
+  width: 200px;
+  padding: 0 8px;
+  flex-shrink: 0;
+  word-break: break-word;
+}
+
+.book-author {
+  width: 150px;
+  padding: 0 8px;
+  flex-shrink: 0;
+  word-break: break-word;
+}
+
+.book-status {
+  width: 120px;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.book-category {
+  width: 120px;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.book-actions {
+  width: 80px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Правая панель */
+.right-header {
+  position: sticky;
+  top: 0;
+  background: #f8f9fa;
+  z-index: 10;
+  border-bottom: 2px solid #667eea;
+  flex-shrink: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.dates-header {
+  display: flex;
+  padding: 12px 0;
+  border-bottom: 2px solid #333;
+  min-width: max-content;
+}
+
+.date-column {
+  width: auto;
+  min-width: 70px;
+  flex-shrink: 0;
+  text-align: center;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.date-column:first-child {
+  border-left: none;
+}
+
+.date-column:last-child {
+  border-right: none;
+}
+
+.date-label {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #333;
+}
+
+.date-subheader {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  font-size: 11px;
+  color: #666;
+  padding: 4px 0;
+}
+
+.right-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.stats-row {
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  min-width: max-content;
+  min-height: 50px;
+}
+
+.stats-row:last-child {
+  border-bottom: none;
+}
+
+.stat-cell {
+  width: auto;
+  min-width: 70px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 8px 4px;
+  transition: background 0.2s ease;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+
+.stat-cell:first-child {
+  border-left: none;
+}
+
+.stat-cell:last-child {
+  border-right: none;
+}
+
+.stat-cell:hover {
+  background: #e3f2fd;
+}
+
+.pages-value {
+  width: 30px;
+  text-align: center;
+  font-size: 13px;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.hours-value {
+  width: 30px;
+  text-align: center;
+  font-size: 13px;
+  color: #e65100;
+  font-weight: 500;
+}
+
+/* Разделительная линия */
+.panel-divider {
+  width: 8px;
+  background: #e0e0e0;
+  cursor: col-resize;
+  flex-shrink: 0;
+  position: relative;
+  transition: background 0.2s ease;
+}
+
+.panel-divider:hover {
+  background: #667eea;
+}
+
+.divider-grip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4px;
+  height: 40px;
+  background: #999;
+  border-radius: 2px;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.panel-divider:hover .divider-grip {
+  opacity: 1;
+  background: white;
+}
+
+/* Итоги */
+.library-footer {
+  padding: 15px 20px;
+  border-top: 2px solid #e0e0e0;
+  background: #f8f9fa;
+  flex-shrink: 0;
+}
+
+.period-totals {
+  display: flex;
+  gap: 20px;
+  justify-content: flex-end;
+  font-size: 14px;
+}
+
+.total-label {
+  color: #666;
+}
+
+.total-pages {
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.total-hours {
+  color: #e65100;
+  font-weight: 500;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .left-panel {
+    width: 400px !important;
+  }
+  
+  .book-title {
+    width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .library-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .date-range-selector {
+    flex-direction: column;
+  }
+  
+  .left-panel {
+    width: 300px !important;
+  }
+  
+  .book-title {
+    width: 120px;
+  }
+  
+  .book-author {
+    width: 100px;
+  }
+  
+  .date-column {
+    min-width: 60px;
+  }
+  
+  .stat-cell {
+    min-width: 60px;
+  }
+}
+
+/* Правая панель - единая прокрутка */
+.right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.right-scroll-container {
+  display: flex;
+  flex-direction: column;
+  overflow-x: auto;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.right-header {
+  background: #f8f9fa;
+  border-bottom: 3px solid rgb(231, 229, 229);
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  overflow-x: hidden; /* Убираем прокрутку у заголовка */
+}
+
+.dates-header {
+  border-bottom: none !important;
+}
+
+.date-column {
+  width: 80px;
+  flex-shrink: 0;
+  text-align: center;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.date-column:first-child {
+  border-left: none;
+}
+
+.date-column:last-child {
+  border-right: none;
+}
+
+.date-label {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #333;
+}
+
+.date-subheader {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  font-size: 11px;
+  color: #666;
+  padding: 4px 0;
+}
+
+.right-body {
+  flex: 1;
+  overflow: visible;
+}
+
+.stats-row {
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  width: max-content;
+  min-width: 100%;
+}
+
+.stats-row:last-child {
+  border-bottom: none;
+}
+
+.stat-cell {
+  width: 80px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 8px 4px;
+  transition: background 0.2s ease;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+
+.stat-cell:first-child {
+  border-left: none;
+}
+
+.stat-cell:last-child {
+  border-right: none;
+}
+
+.stat-cell:hover {
+  background: #e3f2fd;
+}
+
+.pages-value, .hours-value {
+  width: 30px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.pages-value {
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.hours-value {
+  color: #e65100;
+  font-weight: 500;
+}
+
+
 

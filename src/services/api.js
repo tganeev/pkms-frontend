@@ -451,6 +451,22 @@ deleteBook: async (bookId) => {
   }
 },
 
+updateProfile: async (profileData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/profile`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(profileData),
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error('API Error (updateProfile):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
+
 addReadingStat: async (bookId, statData) => {
   try {
     const response = await fetch(`${API_BASE_URL}/library/books/${bookId}/stats`, {
