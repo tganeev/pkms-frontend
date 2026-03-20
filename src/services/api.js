@@ -381,6 +381,107 @@ export const api = {
     }
   },
 
+  // Library
+getLibraryView: async (startDate, endDate) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/library?startDate=${startDate}&endDate=${endDate}`
+    );
+    return handleResponse(response);
+  } catch (error) {
+    console.error('API Error (getLibraryView):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
+
+getAllBooks: async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/library/books`);
+    return handleResponse(response);
+  } catch (error) {
+    console.error('API Error (getAllBooks):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
+
+createBook: async (bookData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/library/books`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(bookData),
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error('API Error (createBook):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
+
+updateBook: async (bookId, bookData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/library/books/${bookId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(bookData),
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error('API Error (updateBook):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
+
+deleteBook: async (bookId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/library/books/${bookId}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      throw new Error('Ошибка удаления книги');
+    }
+    return true;
+  } catch (error) {
+    console.error('API Error (deleteBook):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
+
+addReadingStat: async (bookId, statData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/library/books/${bookId}/stats`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(statData),
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error('API Error (addReadingStat):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
+
+deleteReadingStat: async (bookId, date) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/library/books/${bookId}/stats/${date}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      throw new Error('Ошибка удаления статистики');
+    }
+    return true;
+  } catch (error) {
+    console.error('API Error (deleteReadingStat):', error);
+    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  }
+},
+
   // Удалить стандарт
   deleteStandard: async (standardId) => {
     try {

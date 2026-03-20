@@ -3435,5 +3435,337 @@ body {
   transform: translateY(-2px);
 }
 
+/* Library Styles */
+.library-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
 
+.library-header {
+  padding: 20px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.library-header h2 {
+  margin: 0 0 15px 0;
+  color: #333;
+}
+
+.library-controls {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.add-book-btn {
+  padding: 10px 20px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.add-book-btn:hover {
+  background: #218838;
+  transform: translateY(-2px);
+}
+
+.date-range-selector {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.date-range-selector label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #666;
+}
+
+.date-range-selector input {
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.library-content {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+.left-panel {
+  width: 500px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 2px solid #e0e0e0;
+  overflow-y: auto;
+}
+
+.panel-divider {
+  width: 4px;
+  background: #667eea;
+  cursor: col-resize;
+}
+
+.right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.left-header, .right-header {
+  position: sticky;
+  top: 0;
+  background: #f8f9fa;
+  z-index: 10;
+  border-bottom: 2px solid #667eea;
+}
+
+.left-header {
+  display: flex;
+  padding: 12px 0;
+  font-weight: bold;
+  color: #333;
+}
+
+.book-number {
+  width: 50px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.book-title {
+  width: 200px;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.book-author {
+  width: 150px;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.book-status {
+  width: 120px;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.book-category {
+  width: 120px;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.book-actions {
+  width: 80px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.left-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.book-row {
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  align-items: center;
+}
+
+.book-row:hover {
+  background: #f8f9fa;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.dates-header {
+  display: flex;
+  padding: 12px 0;
+}
+
+.date-column {
+  width: 80px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.date-label {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.date-subheader {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  font-size: 11px;
+  color: #666;
+}
+
+.right-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.stats-row {
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.stat-cell {
+  width: 80px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: background 0.2s ease;
+}
+
+.stat-cell:hover {
+  background: #e3f2fd;
+}
+
+.pages-value, .hours-value {
+  width: 30px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.pages-value {
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.hours-value {
+  color: #e65100;
+  font-weight: 500;
+}
+
+.library-footer {
+  padding: 15px 20px;
+  border-top: 2px solid #e0e0e0;
+  background: #f8f9fa;
+}
+
+.period-totals {
+  display: flex;
+  gap: 20px;
+  justify-content: flex-end;
+  font-size: 14px;
+}
+
+.total-label {
+  color: #666;
+}
+
+.total-pages {
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.total-hours {
+  color: #e65100;
+  font-weight: 500;
+}
+
+/* Book Info in Modal */
+.book-info {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.book-info .book-title {
+  width: auto;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.reading-date {
+  color: #666;
+  font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .left-panel {
+    width: 400px;
+  }
+  
+  .book-title {
+    width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .library-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .date-range-selector {
+    flex-direction: column;
+  }
+  
+  .left-panel {
+    width: 300px;
+  }
+  
+  .book-title {
+    width: 120px;
+  }
+  
+  .book-author {
+    width: 100px;
+  }
+  
+  .date-column {
+    width: 60px;
+  }
+  
+  .stat-cell {
+    width: 60px;
+  }
+}
 

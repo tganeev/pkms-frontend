@@ -6,6 +6,7 @@ import YearView from './components/YearView';
 import Profile from './components/Profile';
 import CategoryMenu from './components/CategoryMenu';
 import StandardsStats from './components/StandardsStats';
+import Library from './components/Library'; // Новый компонент
 import { WeekProvider } from './context/WeekContext';
 
 function App() {
@@ -17,10 +18,7 @@ function App() {
       case 'week':
         return (
           <WeekProvider>
-            <WeekView 
-              date={selectedDate} 
-              setDate={setSelectedDate}  // Передаем функцию для изменения даты
-            />
+            <WeekView date={selectedDate} setDate={setSelectedDate} />
           </WeekProvider>
         );
       case 'month':
@@ -41,6 +39,8 @@ function App() {
         return <CategoryMenu />;
       case 'standards':
         return <StandardsStats />;
+      case 'library':
+        return <Library />;
       case 'profile':
         return <Profile />;
       default:
@@ -82,6 +82,12 @@ function App() {
             onClick={() => setActiveView('standards')}
           >
             📈 Стандарты
+          </button>
+          <button 
+            className={activeView === 'library' ? 'active' : ''}
+            onClick={() => setActiveView('library')}
+          >
+            📚 Библиотека
           </button>
           <button 
             className={activeView === 'profile' ? 'active' : ''}
