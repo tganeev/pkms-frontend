@@ -6462,3 +6462,288 @@ body {
   gap: 5px;
   justify-content: center;
 }
+
+/* Week View - минималистичный стиль */
+.week-view {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.week-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.week-title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.week-title h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.nav-btn {
+  padding: 6px 12px;
+  border: 1px solid #e0e0e0;
+  background: white;
+  color: #666;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+}
+
+.today-btn {
+  padding: 6px 12px;
+  border: 1px solid #e0e0e0;
+  background: white;
+  color: #666;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.today-btn:hover {
+  background: #f5f5f5;
+}
+
+/* Сетка недели */
+.week-schedule {
+  display: flex;
+  gap: 1px;
+  background: #f0f0f0;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.week-time-labels {
+  width: 100px;
+  background: white;
+  border-right: 1px solid #e0e0e0;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.week-time-labels .time-labels-header {
+  padding: 12px 8px;
+  background: #f8f9fa;
+  color: #666;
+  font-weight: 500;
+  text-align: center;
+  font-size: 13px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.week-time-labels .time-label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 4px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #666;
+  border-bottom: 1px solid #f0f0f0;
+  text-align: center;
+  background: #fafafa;
+}
+
+/* Колонки дней */
+.week-day-column {
+  flex: 1;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  min-width: 100px;
+}
+
+.week-day-column.today {
+  background: #fafafa;
+}
+
+.week-day-header {
+  padding: 12px 8px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: center;
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.day-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.day-date {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Периоды дня - все белые, без градиентов */
+.week-periods {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.week-period {
+  flex: 1;
+  padding: 6px;
+  border-bottom: 1px solid #f0f0f0;
+  min-height: 80px;
+  background: white;
+}
+
+/* Убираем цветные фоны для периодов */
+.week-period.morning-period,
+.week-period.day-period,
+.week-period.evening-period {
+  background: white;
+}
+
+/* Стили для записей */
+.week-entry {
+  position: relative;
+  padding: 8px 8px 8px 28px;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.week-entry:hover {
+  transform: translateX(2px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+/* Иконка статуса */
+.status-icon {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+}
+
+/* Статусы - по умолчанию белые */
+.week-entry.status-completed {
+  background: white;
+  border-left: 3px solid #e0e0e0;
+}
+
+.week-entry.status-partial {
+  background: #fffbe6;
+  border-left: 3px solid #f5c542;
+}
+
+.week-entry.status-failed {
+  background: #fff4f0;
+  border-left: 3px solid #e08e79;
+}
+
+/* Для записей без статуса - белые */
+.week-entry:not(.status-completed):not(.status-partial):not(.status-failed) {
+  background: white;
+  border-left: 3px solid #e0e0e0;
+}
+
+/* Содержимое записи */
+.week-entry .entry-category {
+  font-weight: 500;
+  font-size: 11px;
+  margin-bottom: 2px;
+  color: #333;
+}
+
+.week-entry .entry-practice {
+  font-size: 10px;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.week-entry .entry-duration {
+  font-size: 9px;
+  color: #999;
+}
+
+.week-entry .entry-repeat {
+  font-size: 9px;
+  color: #999;
+  margin-top: 2px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .week-schedule {
+    overflow-x: auto;
+  }
+  
+  .week-time-labels {
+    width: 80px;
+  }
+  
+  .week-day-column {
+    min-width: 100px;
+  }
+  
+  .week-period {
+    min-height: 100px;
+  }
+}
+
+/* Статусы */
+.week-entry.status-completed {
+  background: #e8f5e9;
+  border-left: 3px solid #4caf50;
+}
+
+.week-entry.status-partial {
+  background: #fffbe6;
+  border-left: 3px solid #f5c542;
+}
+
+.week-entry.status-failed {
+  background: #fff4f0;
+  border-left: 3px solid #e08e79;
+}
+
+/* Для записей без статуса - белые */
+.week-entry:not(.status-completed):not(.status-partial):not(.status-failed) {
+  background: white;
+  border-left: 3px solid #e0e0e0;
+}

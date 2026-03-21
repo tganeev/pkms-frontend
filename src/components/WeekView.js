@@ -253,7 +253,6 @@ const loadCategoryStandards = async (categoryId) => {
                   <div 
                     key={entry.id} 
                     className={`week-entry ${entry.status ? `status-${entry.status}` : ''}`}
-                    style={{ backgroundColor: getCategoryColor(entry.category) }}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleEntryClick(entry);
@@ -278,7 +277,6 @@ const loadCategoryStandards = async (categoryId) => {
                   <div 
                     key={entry.id} 
                     className={`week-entry ${entry.status ? `status-${entry.status}` : ''}`}
-                    style={{ backgroundColor: getCategoryColor(entry.category) }}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleEntryClick(entry);
@@ -303,7 +301,6 @@ const loadCategoryStandards = async (categoryId) => {
                   <div 
                     key={entry.id} 
                     className={`week-entry ${entry.status ? `status-${entry.status}` : ''}`}
-                    style={{ backgroundColor: getCategoryColor(entry.category) }}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleEntryClick(entry);
