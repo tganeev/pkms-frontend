@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import StandardModal from './StandardModal';
 
@@ -40,7 +40,6 @@ function CategoryTable({ category, onBack, onEditCategory }) {
   const loadStandards = async () => {
     try {
       const data = await api.getCategoryStandards(category.id);
-      console.log('Loaded standards:', data); // Для отладки
       setStandards(data);
     } catch (err) {
       console.error('Error loading standards:', err);
@@ -49,7 +48,7 @@ function CategoryTable({ category, onBack, onEditCategory }) {
 
   const handleDeleteStandard = async (standardId, standardName) => {
     if (!window.confirm(`Удалить стандарт "${standardName}"?`)) return;
-    
+
     try {
       await api.deleteStandard(standardId);
       await loadStandards();
@@ -60,12 +59,10 @@ function CategoryTable({ category, onBack, onEditCategory }) {
 
   const handleArchiveStandard = async (standard) => {
     if (!window.confirm(`Отправить стандарт "${standard.name}" в архив?`)) return;
-    
+
     setArchivingStandardId(standard.id);
     try {
       const today = new Date().toISOString().split('T')[0];
-      
-      // Создаем объект для обновления
       const updatedStandard = {
         id: standard.id,
         name: standard.name,
@@ -75,16 +72,8 @@ function CategoryTable({ category, onBack, onEditCategory }) {
         endDate: today,
         practices: standard.practices || []
       };
-      
-      console.log('Sending update with endDate:', today);
-      
-      // Отправляем запрос на обновление
-      const response = await api.updateStandard(standard.id, updatedStandard);
-      console.log('Update response:', response);
-      
-      // Принудительно перезагружаем стандарты
+      await api.updateStandard(standard.id, updatedStandard);
       await loadStandards();
-      
     } catch (err) {
       console.error('Archive error:', err);
       setError(err.message);
@@ -93,21 +82,10 @@ function CategoryTable({ category, onBack, onEditCategory }) {
     }
   };
 
-const isStandardActive = (standard) => {
-  const today = new Date().toISOString().split('T')[0];
-  
-  // Если нет endDate - стандарт действует
-  if (!standard.endDate) {
-    console.log(standard.name, 'no endDate -> active');
-    return true;
-  }
-  
-  // Если endDate есть, стандарт НЕ действует (даже если endDate === today)
-  // При установке endDate = today, стандарт сразу становится недействующим
-  const isActive = false;
-  console.log(standard.name, 'has endDate:', standard.endDate, '-> inactive');
-  return false;
-};
+  const isStandardActive = (standard) => {
+    if (!standard.endDate) return true;
+    return false;
+  };
 
   const formatDate = (dateStr) => {
     if (!dateStr) return 'бессрочно';
@@ -128,15 +106,14 @@ const isStandardActive = (standard) => {
 
   return (
     <div className="category-table-container">
-      {/* Верхняя панель с навигацией и заголовком */}
+      {/* Верхняя панель с навигацией, заголовком и кнопкой добавления стандарта */}
       <div className="category-header-panel">
-        <button className="back-btn" onClick={onBack}>
+        <button className="back-btn" onClick={() => onBack()}>
           ← Назад
         </button>
-        
-        <h2 className="category-title">{category.name}</h2>
-        
-        <button 
+        <h2 className="category-title"style={{ fontSize: '32px', fontWeight: 'bold' }}>
+          {category.name}</h2>
+        <button
           className="add-standard-btn"
           onClick={() => {
             setEditingStandard(null);
@@ -147,19 +124,18 @@ const isStandardActive = (standard) => {
         </button>
       </div>
 
-      {/* Все карточки стандартов в одном ряду */}
+      {/* Все карточки стандартов */}
       {standards.length > 0 && (
         <div className="standards-row">
           {standards.map(standard => {
             const isActive = isStandardActive(standard);
-            
             return (
               <div key={standard.id} className={`standard-card ${isActive ? 'active-standard' : 'archived-standard'}`}>
                 <div className="standard-card-header">
                   <h4>{standard.name}</h4>
                   <div className="standard-actions">
                     {isActive && (
-                      <button 
+                      <button
                         className="archive-btn"
                         onClick={() => handleArchiveStandard(standard)}
                         disabled={archivingStandardId === standard.id}
@@ -168,7 +144,7 @@ const isStandardActive = (standard) => {
                         {archivingStandardId === standard.id ? '⏳' : '📦'}
                       </button>
                     )}
-                    <button 
+                    <button
                       className="edit-btn"
                       onClick={() => {
                         setEditingStandard(standard);
@@ -178,7 +154,7 @@ const isStandardActive = (standard) => {
                     >
                       ✏️
                     </button>
-                    <button 
+                    <button
                       className="delete-btn"
                       onClick={() => handleDeleteStandard(standard.id, standard.name)}
                       title="Удалить стандарт"
@@ -187,7 +163,6 @@ const isStandardActive = (standard) => {
                     </button>
                   </div>
                 </div>
-                
                 <div className="status-container">
                   {isActive ? (
                     <span className="status-badge active">Действующий</span>
@@ -195,11 +170,9 @@ const isStandardActive = (standard) => {
                     <span className="status-badge inactive">Недействующий</span>
                   )}
                 </div>
-                
                 {standard.description && (
                   <p className="standard-description">{standard.description}</p>
                 )}
-                
                 <div className="standard-dates">
                   <div className="date-item">
                     <span className="date-label">Ввод:</span>
@@ -238,16 +211,17 @@ const isStandardActive = (standard) => {
             />
           </label>
         </div>
-        
-        <button 
+        <button
           className="edit-category-btn"
-          onClick={() => onEditCategory(category)}
+          onClick={() => {
+            onEditCategory(category);
+          }}
         >
           Редактировать
         </button>
       </div>
 
-      {/* Таблица с данными */}
+     {/* Таблица с данными */}
       <div className="table-wrapper">
         <table className="category-table">
           <thead>
@@ -263,7 +237,7 @@ const isStandardActive = (standard) => {
               const formattedDate = new Date(row.date).toLocaleDateString('ru-RU');
               return (
                 <tr key={row.date}>
-                  <td>{formattedDate}</td>
+                  <td className="date-cell">{formattedDate}</td>
                   {tableData.practices.map(practice => (
                     <td key={practice} className="practice-value">
                       {row.values[practice] || '-'}

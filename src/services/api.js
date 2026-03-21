@@ -233,19 +233,22 @@ export const api = {
   },
 
   deletePractice: async (practiceId) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/categories/practices/${practiceId}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Ошибка удаления практики');
-      }
-      return true;
-    } catch (error) {
-      console.error('API Error (deletePractice):', error);
-      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+  try {
+    const response = await fetch(`${API_BASE_URL}/categories/practices/${practiceId}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      // Пробрасываем текст ошибки
+      throw new Error(errorText || 'Ошибка удаления практики');
     }
-  },
+    return true;
+  } catch (error) {
+    console.error('API Error (deletePractice):', error);
+    // Пробрасываем оригинальное сообщение ошибки
+    throw error;
+  }
+},
 
   // Скопировать практики из другой категории
   copyPracticesFromCategory: async (targetCategoryId, sourceCategoryId, practiceIds) => {

@@ -6337,3 +6337,128 @@ body {
 .category-vertical-divider {
   background: #e0e0e0 !important;
 }
+
+.field-hint {
+  display: block;
+  font-size: 11px;
+  color: #999;
+  margin-top: 4px;
+}
+
+/* Стили для кнопок в таблице практик */
+.practices-table .actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.practices-table .edit-btn,
+.practices-table .delete-btn,
+.practices-table .link-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 8px;
+  transition: all 0.2s ease;
+  color: #666;
+  border-radius: 4px;
+}
+
+.practices-table .edit-btn:hover {
+  color: #4ecdc4;
+  background: rgba(78, 205, 196, 0.1);
+  transform: scale(1.1);
+}
+
+.practices-table .delete-btn:hover {
+  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.1);
+  transform: scale(1.1);
+}
+
+.practices-table .link-btn:hover {
+  color: #9b59b6;
+  background: rgba(155, 89, 182, 0.1);
+  transform: scale(1.1);
+}
+
+/* Если нужно, чтобы кнопки были одинакового размера */
+.practices-table .edit-btn,
+.practices-table .delete-btn,
+.practices-table .link-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Кнопка управления связями */
+.link-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 8px;
+  transition: all 0.2s ease;
+  color: #666;
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.link-btn:hover {
+  background: rgba(155, 89, 182, 0.1);
+  transform: scale(1.1);
+  color: #9b59b6;
+}
+
+/* Если есть связи - зеленый фон */
+.link-btn.has-links {
+  color: #27ae60;
+  background: greenyellow;
+}
+
+.link-btn.has-links:hover {
+  background: rgba(39, 174, 96, 0.2);
+  color: #229954;
+}
+
+/* Другие кнопки */
+.edit-btn, .delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 8px;
+  transition: all 0.2s ease;
+  color: #666;
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-btn:hover {
+  background: rgba(78, 205, 196, 0.1);
+  color: #4ecdc4;
+  transform: scale(1.1);
+}
+
+.delete-btn:hover {
+  background: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+  transform: scale(1.1);
+}
+
+.practices-table .actions {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+}

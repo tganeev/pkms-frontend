@@ -8,7 +8,8 @@ function CategoryManagement({ category, onClose, onUpdate }) {
     description: '',
     color: '#667eea',
     icon: '📊',
-    practices: []
+    practices: [],
+    zone: 'selfDiscovery'
   });
   const [editingPractice, setEditingPractice] = useState(null);
   const [practiceForm, setPracticeForm] = useState({
@@ -20,21 +21,46 @@ function CategoryManagement({ category, onClose, onUpdate }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  
-  // Состояния для копирования практик
-  const [categories, setCategories] = useState([]);
-  const [selectedSourceCategory, setSelectedSourceCategory] = useState(null);
-  const [sourceCategoryPractices, setSourceCategoryPractices] = useState([]);
-  const [selectedPractices, setSelectedPractices] = useState([]);
-  const [copyLoading, setCopyLoading] = useState(false);
-  
-  // Состояние для управления связанными практиками
   const [managingLinksPractice, setManagingLinksPractice] = useState(null);
+  const [showLinksModal, setShowLinksModal] = useState(false);
+  const [practiceLinks, setPracticeLinks] = useState({}); // Храним связи для каждой практики
 
-  // Загружаем список всех категорий для копирования
+  // Загружаем связи для практик
   useEffect(() => {
-    loadCategories();
-  }, []);
+    if (category?.id && formData.practices.length > 0) {
+      loadAllPracticeLinks();
+    }
+  }, [category?.id, formData.practices]);
+
+  const loadAllPracticeLinks = async () => {
+    const linksMap = {};
+    for (const practice of formData.practices) {
+      try {
+        const links = await api.getPracticeLinks(practice.id);
+        linksMap[practice.id] = links.length > 0;
+      } catch (err) {
+        console.error('Error loading links for practice:', practice.id);
+        linksMap[practice.id] = false;
+      }
+    }
+    setPracticeLinks(linksMap);
+  };
+
+  const loadPracticeLinks = async (practiceId) => {
+    try {
+      const links = await api.getPracticeLinks(practiceId);
+      setPracticeLinks(prev => ({ ...prev, [practiceId]: links.length > 0 }));
+    } catch (err) {
+      console.error('Error loading links:', err);
+    }
+  };
+
+  // Зоны для выбора
+  const zones = [
+    { id: 'selfDiscovery', name: 'Самопознание' },
+    { id: 'selfRealization', name: 'Самореализация' },
+    { id: 'service', name: 'Служение' }
+  ];
 
   // Загружаем данные при монтировании или изменении category.id
   useEffect(() => {
@@ -46,21 +72,11 @@ function CategoryManagement({ category, onClose, onUpdate }) {
         description: '',
         color: '#667eea',
         icon: '📊',
-        practices: []
+        practices: [],
+        zone: 'selfDiscovery'
       });
     }
   }, [category?.id]);
-
-  const loadCategories = async () => {
-    try {
-      const data = await api.getCategories();
-      // Исключаем текущую категорию из списка источников
-      const filtered = data.filter(c => c.id !== category?.id);
-      setCategories(filtered);
-    } catch (err) {
-      console.error('Error loading categories:', err);
-    }
-  };
 
   const loadCategoryData = async (categoryId) => {
     try {
@@ -70,70 +86,11 @@ function CategoryManagement({ category, onClose, onUpdate }) {
         description: data.description || '',
         color: data.color || '#667eea',
         icon: data.icon || '📊',
-        practices: data.practices || []
+        practices: data.practices || [],
+        zone: data.zone || 'selfDiscovery'
       });
     } catch (err) {
       setError('Ошибка загрузки данных категории: ' + err.message);
-    }
-  };
-
-  const handleSourceCategoryChange = async (categoryId) => {
-    const category = categories.find(c => c.id === parseInt(categoryId));
-    setSelectedSourceCategory(category);
-    setSelectedPractices([]);
-    
-    if (category) {
-      try {
-        const data = await api.getCategory(category.id);
-        setSourceCategoryPractices(data.practices || []);
-      } catch (err) {
-        setError('Ошибка загрузки практик: ' + err.message);
-      }
-    } else {
-      setSourceCategoryPractices([]);
-    }
-  };
-
-  const handlePracticeSelection = (practiceId) => {
-    setSelectedPractices(prev => {
-      if (prev.includes(practiceId)) {
-        return prev.filter(id => id !== practiceId);
-      } else {
-        return [...prev, practiceId];
-      }
-    });
-  };
-
-  const handleCopyPractices = async () => {
-    if (!selectedSourceCategory || selectedPractices.length === 0) {
-      setError('Выберите категорию и хотя бы одну практику');
-      return;
-    }
-
-    setCopyLoading(true);
-    setError(null);
-
-    try {
-      await api.copyPracticesFromCategory(
-        category.id,
-        selectedSourceCategory.id,
-        selectedPractices
-      );
-
-      // Перезагружаем данные категории
-      await loadCategoryData(category.id);
-      
-      setSuccess('Практики успешно скопированы');
-      setTimeout(() => setSuccess(null), 3000);
-      
-      // Сбрасываем выбор
-      setSelectedSourceCategory(null);
-      setSourceCategoryPractices([]);
-      setSelectedPractices([]);
-    } catch (err) {
-      setError('Ошибка копирования: ' + err.message);
-    } finally {
-      setCopyLoading(false);
     }
   };
 
@@ -164,6 +121,15 @@ function CategoryManagement({ category, onClose, onUpdate }) {
       } else {
         savedCategory = await api.createCategory(formData);
         setSuccess('Категория успешно создана');
+        
+        const savedZones = localStorage.getItem('operational_model_zones');
+        if (savedZones) {
+          const zonesData = JSON.parse(savedZones);
+          if (zonesData[formData.zone]) {
+            zonesData[formData.zone].categories.push(savedCategory);
+            localStorage.setItem('operational_model_zones', JSON.stringify(zonesData));
+          }
+        }
       }
       
       setFormData({
@@ -171,7 +137,8 @@ function CategoryManagement({ category, onClose, onUpdate }) {
         description: savedCategory.description || '',
         color: savedCategory.color || '#667eea',
         icon: savedCategory.icon || '📊',
-        practices: savedCategory.practices || []
+        practices: savedCategory.practices || [],
+        zone: formData.zone
       });
       
       if (!category && savedCategory.id) {
@@ -222,6 +189,11 @@ function CategoryManagement({ category, onClose, onUpdate }) {
       setPracticeForm({ name: '', description: '', unitType: 'minutes', displayOrder: 0 });
       setEditingPractice(null);
       
+      // Загружаем связи для новой практики
+      if (!editingPractice) {
+        loadPracticeLinks(savedPractice.id);
+      }
+      
       setTimeout(() => setSuccess(null), 2000);
     } catch (err) {
       setError(err.message);
@@ -241,31 +213,63 @@ function CategoryManagement({ category, onClose, onUpdate }) {
   };
 
   const handleDeletePractice = async (practiceId) => {
-    if (!window.confirm('Удалить эту практику?')) return;
+  if (!window.confirm('Удалить эту практику?')) return;
+  
+  setLoading(true);
+  setError(null);
+  
+  try {
+    await api.deletePractice(practiceId);
     
-    setLoading(true);
-    setError(null);
+    const updatedPractices = formData.practices.filter(p => p.id !== practiceId);
+    setFormData({
+      ...formData,
+      practices: updatedPractices
+    });
     
-    try {
-      await api.deletePractice(practiceId);
-      
-      const updatedPractices = formData.practices.filter(p => p.id !== practiceId);
-      setFormData({
-        ...formData,
-        practices: updatedPractices
-      });
-      
-      setSuccess('Практика удалена');
-      setTimeout(() => setSuccess(null), 2000);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    setSuccess('Практика удалена');
+    setTimeout(() => setSuccess(null), 2000);
+  } catch (err) {
+    console.error('Delete practice error:', err);
+    
+    // Получаем текст ошибки из разных источников
+    let errorText = '';
+    
+    if (typeof err === 'string') {
+      errorText = err;
+    } else if (err.message) {
+      errorText = err.message;
+    } else if (err.response?.data) {
+      // Если ошибка от axios/fetch
+      errorText = typeof err.response.data === 'string' ? err.response.data : JSON.stringify(err.response.data);
+    } else if (err.toString) {
+      errorText = err.toString();
     }
-  };
-
+    
+    console.log('Error text:', errorText);
+    
+    // Проверяем разные варианты сообщений об ошибке внешнего ключа
+    if (errorText.includes('violates foreign key') || 
+        errorText.includes('referenced') ||
+        errorText.includes('constraint') ||
+        errorText.includes('still referenced') ||
+        errorText.includes('foreign key constraint') ||
+        errorText.includes('23503')) {  // SQL state код для foreign key violation
+      setError('❌ Нельзя удалить практику, которая используется в стандартах. Сначала удалите стандарты, использующие эту практику.');
+    } else {
+      setError('Ошибка удаления: ' + errorText);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
   const handleManageLinks = (practice) => {
     setManagingLinksPractice(practice);
+    setShowLinksModal(true);
+  };
+
+  const handleLinksUpdated = async (practiceId) => {
+    await loadPracticeLinks(practiceId);
   };
 
   const unitTypeOptions = [
@@ -326,6 +330,22 @@ function CategoryManagement({ category, onClose, onUpdate }) {
               />
             </div>
           </div>
+
+          <div className="form-group">
+            <label>Секция операционной модели</label>
+            <select
+              name="zone"
+              value={formData.zone}
+              onChange={handleCategoryChange}
+            >
+              {zones.map(zone => (
+                <option key={zone.id} value={zone.id}>{zone.name}</option>
+              ))}
+            </select>
+            <small className="field-hint">
+              Выберите, в какой секции будет отображаться категория
+            </small>
+          </div>
           
           <div className="form-actions">
             <button type="submit" className="save-btn" disabled={loading}>
@@ -339,56 +359,6 @@ function CategoryManagement({ category, onClose, onUpdate }) {
 
         {category?.id && (
           <>
-            {/* Секция копирования практик */}
-            <div className="copy-practices-section">
-              <h4>Копировать практики из другой категории</h4>
-              
-              <div className="form-group">
-                <label>Исходная категория</label>
-                <select
-                  value={selectedSourceCategory?.id || ''}
-                  onChange={(e) => handleSourceCategoryChange(e.target.value)}
-                >
-                  <option value="">Выберите категорию</option>
-                  {categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              {sourceCategoryPractices.length > 0 && (
-                <>
-                  <div className="practices-to-copy">
-                    <label>Выберите практики для копирования:</label>
-                    <div className="practices-checkboxes">
-                      {sourceCategoryPractices.map(practice => (
-                        <label key={practice.id} className="checkbox-label">
-                          <input
-                            type="checkbox"
-                            checked={selectedPractices.includes(practice.id)}
-                            onChange={() => handlePracticeSelection(practice.id)}
-                          />
-                          {practice.name} ({unitTypeOptions.find(opt => opt.value === practice.unitType)?.label || practice.unitType})
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="form-actions">
-                    <button
-                      type="button"
-                      className="copy-btn"
-                      onClick={handleCopyPractices}
-                      disabled={copyLoading || selectedPractices.length === 0}
-                    >
-                      {copyLoading ? 'Копирование...' : `Копировать выбранные (${selectedPractices.length})`}
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-
-            {/* Секция практик */}
             <div className="practices-section">
               <h4>Практики</h4>
               
@@ -472,54 +442,57 @@ function CategoryManagement({ category, onClose, onUpdate }) {
                 {formData.practices && formData.practices.length > 0 ? (
                   <table className="practices-table">
                     <thead>
-                      <tr>
+                      
                         <th>Название</th>
                         <th>Описание</th>
                         <th>Тип</th>
                         <th>Порядок</th>
                         <th>Действия</th>
-                      </tr>
-                    </thead>
+                      </thead>
+                    
                     <tbody>
                       {[...formData.practices]
                         .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
-                        .map(practice => (
-                          <tr key={practice.id}>
-                            <td>{practice.name}</td>
-                            <td>{practice.description || '-'}</td>
-                            <td>
-                              {unitTypeOptions.find(opt => opt.value === practice.unitType)?.label || practice.unitType}
-                            </td>
-                            <td>{practice.displayOrder}</td>
-                            <td className="actions">
-                              <button 
-                                className="edit-btn small"
-                                onClick={() => handleEditPractice(practice)}
-                                title="Редактировать"
-                              >
-                                ✏️
-                              </button>
-                              <button 
-                                className="link-btn small"
-                                onClick={() => handleManageLinks(practice)}
-                                title="Управлять связанными практиками"
-                              >
-                                🔗
-                              </button>
-                              <button 
-                                className="delete-btn small"
-                                onClick={() => handleDeletePractice(practice.id)}
-                                title="Удалить"
-                              >
-                                🗑️
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
+                        .map(practice => {
+                          const hasLinks = practiceLinks[practice.id];
+                          return (
+                            <tr key={practice.id}>
+                              <td>{practice.name}</td>
+                              <td>{practice.description || '-'}</td>
+                              <td>
+                                {unitTypeOptions.find(opt => opt.value === practice.unitType)?.label || practice.unitType}
+                              </td>
+                              <td>{practice.displayOrder}</td>
+                              <td className="actions">
+                                <button 
+                                  className="edit-btn"
+                                  onClick={() => handleEditPractice(practice)}
+                                  title="Редактировать"
+                                >
+                                  ✏️
+                                </button>
+                                <button 
+                                  className={`link-btn ${hasLinks ? 'has-links' : ''}`}
+                                  onClick={() => handleManageLinks(practice)}
+                                  title={hasLinks ? 'Управлять связанными практиками (есть связи)' : 'Управлять связанными практиками'}
+                                >
+                                  🔗
+                                </button>
+                                <button 
+                                  className="delete-btn"
+                                  onClick={() => handleDeletePractice(practice.id)}
+                                  title="Удалить"
+                                >
+                                  🗑️
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
                     </tbody>
                   </table>
                 ) : (
-                  <p className="empty-message">Нет практик. Добавьте первую практику или скопируйте из другой категории.</p>
+                  <p className="empty-message">Нет практик. Добавьте первую практику.</p>
                 )}
               </div>
             </div>
@@ -528,13 +501,21 @@ function CategoryManagement({ category, onClose, onUpdate }) {
       </div>
 
       {/* Модальное окно для управления связанными практиками */}
-      {managingLinksPractice && (
-        <div className="modal-overlay" onClick={() => setManagingLinksPractice(null)}>
+      {showLinksModal && managingLinksPractice && (
+        <div className="modal-overlay" onClick={() => {
+          setShowLinksModal(false);
+          setManagingLinksPractice(null);
+        }}>
           <div className="modal-content practice-links-modal" onClick={e => e.stopPropagation()}>
             <PracticeLinksManager
               practice={managingLinksPractice}
               category={category}
-              onClose={() => setManagingLinksPractice(null)}
+              onClose={() => {
+                setShowLinksModal(false);
+                setManagingLinksPractice(null);
+                // Обновляем статус связей после закрытия
+                loadPracticeLinks(managingLinksPractice.id);
+              }}
             />
           </div>
         </div>
