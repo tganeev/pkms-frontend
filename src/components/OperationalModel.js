@@ -55,8 +55,17 @@ function OperationalModel() {
     setLoading(true);
     try {
       const data = await api.getCategories();
-      setCategories(data);
-      loadZonesFromStorage();
+      
+      // Загружаем полные данные для каждой категории (с практиками)
+      const categoriesWithPractices = await Promise.all(
+        data.map(async (cat) => {
+          const fullCategory = await api.getCategory(cat.id);
+          return fullCategory;
+        })
+      );
+      
+      setCategories(categoriesWithPractices);
+      loadZonesFromStorage(categoriesWithPractices);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -64,10 +73,17 @@ function OperationalModel() {
     }
   };
 
-  const loadZonesFromStorage = () => {
+  const loadZonesFromStorage = (categoriesData = categories) => {
     const savedZones = localStorage.getItem('operational_model_zones');
     if (savedZones) {
       const parsedZones = JSON.parse(savedZones);
+      // Обновляем категории в зонах свежими данными (с практиками)
+      Object.keys(parsedZones).forEach(zoneKey => {
+        parsedZones[zoneKey].categories = parsedZones[zoneKey].categories.map(savedCat => {
+          const freshCat = categoriesData.find(c => c.id === savedCat.id);
+          return freshCat || savedCat;
+        });
+      });
       setZones(parsedZones);
     }
   };
@@ -152,6 +168,11 @@ function OperationalModel() {
     setSelectedCategory(category);
   };
 
+  const handleEditCategory = (category) => {
+    setEditingCategory(category);
+    setShowManagement(true);
+  };
+
   const handleDeleteCategory = (category, e) => {
     if (e && e.stopPropagation) {
       e.stopPropagation();
@@ -173,7 +194,6 @@ function OperationalModel() {
             setShowManagement(true);
           }}
         />
-        {/* CategoryManagement для редактирования категории */}
         {showManagement && (
           <CategoryManagement
             category={editingCategory}
@@ -267,7 +287,7 @@ function OperationalModel() {
 
                       <div className="category-bottom">
                         <div className="category-cell left-cell">
-                          <span className="cell-text">Кол-во практик</span>
+                          <span className="cell-text">Практик:</span>
                         </div>
                         <div className="category-vertical-divider"></div>
                         <div className="category-cell right-cell">
@@ -283,7 +303,6 @@ function OperationalModel() {
         ))}
       </div>
 
-      {/* CategoryManagement для создания/редактирования категории */}
       {showManagement && (
         <CategoryManagement
           category={editingCategory}
