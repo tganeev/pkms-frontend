@@ -1,17 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import WeekView from './components/WeekView';
 import MonthView from './components/MonthView';
 import YearView from './components/YearView';
 import Profile from './components/Profile';
-import CategoryMenu from './components/CategoryMenu';
+import OperationalModel from './components/OperationalModel';
 import StandardsStats from './components/StandardsStats';
-import Library from './components/Library'; // Новый компонент
+import Library from './components/Library';
 import { WeekProvider } from './context/WeekContext';
 
 function App() {
   const [activeView, setActiveView] = useState('week');
   const [selectedDate, setSelectedDate] = useState(new Date());
+  
+  const [profile, setProfile] = useState(() => {
+    const saved = localStorage.getItem('profile');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing profile:', e);
+      }
+    }
+    return {
+      name: '',
+      email: '',
+      avatar: '',
+      preferences: {
+        categories: []
+      }
+    };
+  });
+
+  useEffect(() => {
+    localStorage.setItem('profile', JSON.stringify(profile));
+  }, [profile]);
 
   const renderView = () => {
     switch(activeView) {
@@ -35,14 +58,14 @@ function App() {
             setActiveView('month');
           }}
         />;
-      case 'categories':
-        return <CategoryMenu />;
+      case 'operational':
+        return <OperationalModel />;
       case 'standards':
         return <StandardsStats />;
       case 'library':
         return <Library />;
       case 'profile':
-        return <Profile />;
+        return <Profile profile={profile} setProfile={setProfile} />;
       default:
         return null;
     }
@@ -72,10 +95,10 @@ function App() {
             Год
           </button>
           <button 
-            className={activeView === 'categories' ? 'active' : ''}
-            onClick={() => setActiveView('categories')}
+            className={activeView === 'operational' ? 'active' : ''}
+            onClick={() => setActiveView('operational')}
           >
-            📊 Категории
+            🏛️ Операционная модель
           </button>
           <button 
             className={activeView === 'standards' ? 'active' : ''}
