@@ -6747,3 +6747,30 @@ body {
   background: white;
   border-left: 3px solid #e0e0e0;
 }
+
+/* Drag-and-Drop стили */
+.week-entry[draggable="true"] {
+  cursor: grab;
+  user-select: none;
+}
+
+.week-entry[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+.week-period.drag-over {
+  background: #e8f0fe !important;
+  border: 2px dashed #667eea;
+  transition: all 0.2s ease;
+}
+
+/* Анимация при перетаскивании */
+.week-entry {
+  transition: transform 0.1s ease, opacity 0.2s ease;
+}
+
+.week-entry:active {
+  opacity: 0.7;
+  transform: scale(0.98);
+}
+

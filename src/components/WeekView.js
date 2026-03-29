@@ -53,7 +53,7 @@ const loadCategoryStandards = async (categoryId) => {
   setStandardsLoading(true);
   try {
     const standards = await api.getCategoryStandards(categoryId);
-    
+
     // Фильтруем стандарты по статусу, а не по дате
     const activeStandards = standards.filter(standard => {
       // Используем поле active из ответа API
@@ -66,7 +66,7 @@ const loadCategoryStandards = async (categoryId) => {
         return !standard.endDate || standard.endDate >= today;
       }
     });
-    
+
     console.log('Active standards:', activeStandards);
     setCategoryStandards(activeStandards);
   } catch (err) {
@@ -113,7 +113,7 @@ const loadCategoryStandards = async (categoryId) => {
   const handleCategoryChange = (e) => {
     const categoryName = e.target.value;
     const category = categories.find(c => c.name === categoryName);
-    
+
     setSelectedCategory(categoryName);
     setSelectedCategoryId(category?.id || null);
     setSelectedStandard('');
@@ -123,7 +123,7 @@ const loadCategoryStandards = async (categoryId) => {
   const handleStandardChange = (e) => {
     const standardName = e.target.value;
     const standard = categoryStandards.find(s => s.name === standardName);
-    
+
     setSelectedStandard(standardName);
     setSelectedStandardId(standard?.id || null);
   };
@@ -148,7 +148,7 @@ const loadCategoryStandards = async (categoryId) => {
 
       await api.createEntry(newEntry, 'test');
       await loadWeekData();
-      
+
       setSelectedCategory('');
       setSelectedCategoryId(null);
       setSelectedStandard('');
@@ -242,16 +242,16 @@ const loadCategoryStandards = async (categoryId) => {
               <div className="day-name">{day.dayName}</div>
               <div className="day-date">{formatDate(day.date)}</div>
             </div>
-            
+
             <div className="week-periods">
               {/* Утро */}
-              <div 
+              <div
                 className="week-period morning-period"
                 onClick={() => handleSlotClick(new Date(day.date), 'morning')}
               >
                 {day.morning && day.morning.map(entry => (
-                  <div 
-                    key={entry.id} 
+                  <div
+                    key={entry.id}
                     className={`week-entry ${entry.status ? `status-${entry.status}` : ''}`}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -269,13 +269,13 @@ const loadCategoryStandards = async (categoryId) => {
               </div>
 
               {/* День */}
-              <div 
+              <div
                 className="week-period day-period"
                 onClick={() => handleSlotClick(new Date(day.date), 'day')}
               >
                 {day.day && day.day.map(entry => (
-                  <div 
-                    key={entry.id} 
+                  <div
+                    key={entry.id}
                     className={`week-entry ${entry.status ? `status-${entry.status}` : ''}`}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -293,13 +293,13 @@ const loadCategoryStandards = async (categoryId) => {
               </div>
 
               {/* Вечер */}
-              <div 
+              <div
                 className="week-period evening-period"
                 onClick={() => handleSlotClick(new Date(day.date), 'evening')}
               >
                 {day.evening && day.evening.map(entry => (
-                  <div 
-                    key={entry.id} 
+                  <div
+                    key={entry.id}
                     className={`week-entry ${entry.status ? `status-${entry.status}` : ''}`}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -337,10 +337,10 @@ const loadCategoryStandards = async (categoryId) => {
             <div className="selected-info">
               {selectedDay && (
                 <p>
-                  {selectedDay.toLocaleDateString('ru-RU', { 
-                    weekday: 'long', 
-                    day: 'numeric', 
-                    month: 'long' 
+                  {selectedDay.toLocaleDateString('ru-RU', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long'
                   })}
                 </p>
               )}
@@ -352,7 +352,7 @@ const loadCategoryStandards = async (categoryId) => {
                 </p>
               )}
             </div>
-            
+
             <div className="add-item-form">
               <select
                 value={selectedCategory}
@@ -363,7 +363,7 @@ const loadCategoryStandards = async (categoryId) => {
                   <option key={cat.id} value={cat.name}>{cat.name}</option>
                 ))}
               </select>
-              
+
               {selectedCategory && (
                 <select
                   value={selectedStandard}
@@ -389,16 +389,16 @@ const loadCategoryStandards = async (categoryId) => {
                   <option key={option} value={option}>{option}</option>
                 ))}
               </select>
-              
+
               <div className="form-actions">
-                <button 
-                  onClick={addItem} 
+                <button
+                  onClick={addItem}
                   className="add-btn"
                   disabled={!selectedCategory || !selectedStandard || standardsLoading}
                 >
                   Добавить
                 </button>
-                <button 
+                <button
                   onClick={() => {
                     setIsEditing(false);
                     setSelectedDay(null);
@@ -408,7 +408,7 @@ const loadCategoryStandards = async (categoryId) => {
                     setSelectedStandard('');
                     setSelectedStandardId(null);
                     setCategoryStandards([]);
-                  }} 
+                  }}
                   className="cancel-btn"
                 >
                   Отмена
