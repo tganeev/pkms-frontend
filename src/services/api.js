@@ -1,6 +1,6 @@
-// Базовый URL API
-const API_BASE_URL = 'http://localhost:8080/api';
-const USERNAME = 'test'; // Пока используем тестового пользователя
+// Базовый URL API - используем относительный путь
+const API_BASE_URL = '/api';
+const USERNAME = 'test';
 
 // Вспомогательная функция для обработки ответов
 const handleResponse = async (response) => {
@@ -24,7 +24,6 @@ const handleResponse = async (response) => {
 
 // API методы
 export const api = {
-  // Получить записи за неделю
   getWeekEntries: async (date) => {
     try {
       const response = await fetch(
@@ -37,7 +36,6 @@ export const api = {
     }
   },
 
-  // Создать новую запись
   createEntry: async (entryData) => {
     try {
       const response = await fetch(`${API_BASE_URL}/calendar?username=${USERNAME}`, {
@@ -54,21 +52,15 @@ export const api = {
     }
   },
 
-  // Удалить запись
   deleteEntry: async (entryId) => {
     try {
-      console.log(`Deleting entry with ID: ${entryId}`);
       const response = await fetch(`${API_BASE_URL}/calendar/${entryId}?username=${USERNAME}`, {
         method: 'DELETE',
       });
-      
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`Delete failed with status ${response.status}: ${errorText}`);
         throw new Error(`Ошибка удаления: ${response.status} - ${errorText}`);
       }
-      
-      console.log(`Successfully deleted entry ${entryId}`);
       return true;
     } catch (error) {
       console.error('API Error (deleteEntry):', error);
@@ -76,7 +68,6 @@ export const api = {
     }
   },
 
-  // Получить список категорий
   getCategories: async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/categories`);
@@ -87,7 +78,6 @@ export const api = {
     }
   },
 
-  // Получить категорию по ID
   getCategory: async (categoryId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/categories/${categoryId}`);
@@ -98,7 +88,6 @@ export const api = {
     }
   },
 
-  // Обновить статус записи
   updateEntryStatus: async (entryId, statusData) => {
     try {
       const response = await fetch(`${API_BASE_URL}/calendar/${entryId}/status?username=${USERNAME}`, {
@@ -115,7 +104,6 @@ export const api = {
     }
   },
 
-  // Получить стандарты для категории
   getStandards: async (category) => {
     try {
       const response = await fetch(`${API_BASE_URL}/calendar/standards?category=${category}`);
@@ -126,18 +114,6 @@ export const api = {
     }
   },
 
-  // Получить данные Yoga практики за дату
-  getYogaPractice: async (date) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/yoga/${date}`);
-      return handleResponse(response);
-    } catch (error) {
-      console.error('API Error (getYogaPractice):', error);
-      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-    }
-  },
-
-  // Получить таблицу категории
   getCategoryTable: async (categoryName, startDate, endDate) => {
     try {
       const response = await fetch(
@@ -150,7 +126,6 @@ export const api = {
     }
   },
 
-  // Управление категориями
   createCategory: async (categoryData) => {
     try {
       const response = await fetch(`${API_BASE_URL}/categories`, {
@@ -199,7 +174,6 @@ export const api = {
     }
   },
 
-  // Управление практиками
   addPractice: async (categoryId, practiceData) => {
     try {
       const response = await fetch(`${API_BASE_URL}/categories/${categoryId}/practices`, {
@@ -233,44 +207,31 @@ export const api = {
   },
 
   deletePractice: async (practiceId) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/categories/practices/${practiceId}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      const errorText = await response.text();
-      // Пробрасываем текст ошибки
-      throw new Error(errorText || 'Ошибка удаления практики');
-    }
-    return true;
-  } catch (error) {
-    console.error('API Error (deletePractice):', error);
-    // Пробрасываем оригинальное сообщение ошибки
-    throw error;
-  }
-},
-
-  // Скопировать практики из другой категории
-  copyPracticesFromCategory: async (targetCategoryId, sourceCategoryId, practiceIds) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/categories/${targetCategoryId}/copy-practices`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          sourceCategoryId: sourceCategoryId,
-          practiceIds: practiceIds
-        }),
+      const response = await fetch(`${API_BASE_URL}/categories/practices/${practiceId}`, {
+        method: 'DELETE',
       });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Ошибка удаления практики');
+      }
+      return true;
+    } catch (error) {
+      console.error('API Error (deletePractice):', error);
+      throw error;
+    }
+  },
+
+  getAllPractices: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/practices/all`);
       return handleResponse(response);
     } catch (error) {
-      console.error('API Error (copyPracticesFromCategory):', error);
+      console.error('API Error (getAllPractices):', error);
       throw new Error(`Ошибка подключения к серверу: ${error.message}`);
     }
   },
 
-  // Получить все связанные практики для данной практики
   getPracticeLinks: async (practiceId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/practices/${practiceId}/links`);
@@ -281,7 +242,6 @@ export const api = {
     }
   },
 
-  // Добавить связь между практиками
   addPracticeLink: async (sourcePracticeId, targetPracticeId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/practices/links`, {
@@ -301,7 +261,6 @@ export const api = {
     }
   },
 
-  // Удалить связь между практиками
   deletePracticeLink: async (linkId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/practices/links/${linkId}`, {
@@ -317,29 +276,6 @@ export const api = {
     }
   },
 
-  // Получить все практики для выбора источника
-  getAllPractices: async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/practices/all`);
-      return handleResponse(response);
-    } catch (error) {
-      console.error('API Error (getAllPractices):', error);
-      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-    }
-  },
-
-  // Стандарты - статистика
-  getAllStandardsStats: async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/standards/stats`);
-      return handleResponse(response);
-    } catch (error) {
-      console.error('API Error (getAllStandardsStats):', error);
-      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-    }
-  },
-
-  // Получить стандарты категории
   getCategoryStandards: async (categoryId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/categories/${categoryId}/standards`);
@@ -350,7 +286,6 @@ export const api = {
     }
   },
 
-  // Создать стандарт
   createStandard: async (categoryId, standardData) => {
     try {
       const response = await fetch(`${API_BASE_URL}/categories/${categoryId}/standards`, {
@@ -367,7 +302,6 @@ export const api = {
     }
   },
 
-  // Обновить стандарт
   updateStandard: async (standardId, standardData) => {
     try {
       const response = await fetch(`${API_BASE_URL}/standards/${standardId}`, {
@@ -384,124 +318,6 @@ export const api = {
     }
   },
 
-  // Library
-getLibraryView: async (startDate, endDate) => {
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/library?startDate=${startDate}&endDate=${endDate}`
-    );
-    return handleResponse(response);
-  } catch (error) {
-    console.error('API Error (getLibraryView):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
-
-getAllBooks: async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/library/books`);
-    return handleResponse(response);
-  } catch (error) {
-    console.error('API Error (getAllBooks):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
-
-createBook: async (bookData) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/library/books`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(bookData),
-    });
-    return handleResponse(response);
-  } catch (error) {
-    console.error('API Error (createBook):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
-
-updateBook: async (bookId, bookData) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/library/books/${bookId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(bookData),
-    });
-    return handleResponse(response);
-  } catch (error) {
-    console.error('API Error (updateBook):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
-
-deleteBook: async (bookId) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/library/books/${bookId}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      throw new Error('Ошибка удаления книги');
-    }
-    return true;
-  } catch (error) {
-    console.error('API Error (deleteBook):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
-
-updateProfile: async (profileData) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/profile`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(profileData),
-    });
-    return handleResponse(response);
-  } catch (error) {
-    console.error('API Error (updateProfile):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
-
-addReadingStat: async (bookId, statData) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/library/books/${bookId}/stats`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(statData),
-    });
-    return handleResponse(response);
-  } catch (error) {
-    console.error('API Error (addReadingStat):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
-
-deleteReadingStat: async (bookId, date) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/library/books/${bookId}/stats/${date}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      throw new Error('Ошибка удаления статистики');
-    }
-    return true;
-  } catch (error) {
-    console.error('API Error (deleteReadingStat):', error);
-    throw new Error(`Ошибка подключения к серверу: ${error.message}`);
-  }
-},
-
-  // Удалить стандарт
   deleteStandard: async (standardId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/standards/${standardId}`, {
@@ -513,6 +329,116 @@ deleteReadingStat: async (bookId, date) => {
       return true;
     } catch (error) {
       console.error('API Error (deleteStandard):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  getAllStandardsStats: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/standards/stats`);
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (getAllStandardsStats):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  getLibraryView: async (startDate, endDate) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/library?startDate=${startDate}&endDate=${endDate}`
+      );
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (getLibraryView):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  getAllBooks: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/library/books`);
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (getAllBooks):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  createBook: async (bookData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/library/books`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookData),
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (createBook):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  updateBook: async (bookId, bookData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/library/books/${bookId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookData),
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (updateBook):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  deleteBook: async (bookId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/library/books/${bookId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Ошибка удаления книги');
+      }
+      return true;
+    } catch (error) {
+      console.error('API Error (deleteBook):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  addReadingStat: async (bookId, statData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/library/books/${bookId}/stats`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(statData),
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.error('API Error (addReadingStat):', error);
+      throw new Error(`Ошибка подключения к серверу: ${error.message}`);
+    }
+  },
+
+  deleteReadingStat: async (bookId, date) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/library/books/${bookId}/stats/${date}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Ошибка удаления статистики');
+      }
+      return true;
+    } catch (error) {
+      console.error('API Error (deleteReadingStat):', error);
       throw new Error(`Ошибка подключения к серверу: ${error.message}`);
     }
   }
