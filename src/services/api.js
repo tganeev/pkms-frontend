@@ -1,5 +1,30 @@
-// Базовый URL API - используем относительный путь
-const API_BASE_URL = '/api';
+// ===== ОПРЕДЕЛЕНИЕ БАЗОВОГО URL =====
+const getApiBaseUrl = () => {
+  // 1. Переменные окружения (подставляются при сборке)
+  if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL; // Vite
+  }
+  if (typeof process !== 'undefined' && process.env?.REACT_APP_API_BASE_URL) {
+    return process.env.REACT_APP_API_BASE_URL; // CRA
+  }
+  if (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_API_BASE_URL) {
+    return process.env.NEXT_PUBLIC_API_BASE_URL; // Next.js
+  }
+  
+  // 2. Fallback для WebView / file://
+  if (typeof window === 'undefined') return '/api';
+  if (window.location?.protocol === 'file:') return '/api';
+  
+  // 3. Локальная разработка (если переменная не задана)
+  if (window?.location?.hostname === 'localhost') {
+    return 'http://localhost:8080/api';
+  }
+  
+  // 4. Продакшен по умолчанию
+  return '/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 const USERNAME = 'test';
 
 // Вспомогательная функция для обработки ответов
